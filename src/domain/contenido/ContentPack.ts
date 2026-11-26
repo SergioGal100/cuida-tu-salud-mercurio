@@ -12,7 +12,7 @@ export const TEXTOS_UI = [
   "porQue", "queHacer", "muestraSugerida", "paraConversar", "dudasIntro", "alarmasTitulo",
   "nuevaPersona", "volverInicio", "repetirTest", "modoPromotor", "sinConexionTitulo",
   "sinConexionMensaje", "historialTitulo", "historialVacio", "historialNota", "sintomasNuevos",
-  "pendientesEnvio", "todoEnviado",
+  "pendientesEnvio", "todoEnviado", "nivel_VERDE", "nivel_AMARILLO", "nivel_ROJO",
 ] as const;
 export type TextoUi = (typeof TEXTOS_UI)[number];
 
@@ -103,6 +103,8 @@ export interface ContentPack {
     botonHistorial: string;
     enlacePosta: string;
     avisoDatosPrueba: string;
+    /** Tres textos cortos de la portada (gratis, sin nombre, sin internet). */
+    beneficios: string[];
   };
   /** Textos sueltos de la interfaz del test. */
   ui: Record<TextoUi, string>;

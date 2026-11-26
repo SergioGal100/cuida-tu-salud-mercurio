@@ -96,13 +96,20 @@ const SIMBOLOS: Record<string, ReactNode> = {
   ),
 };
 
+/**
+ * Dos tonos: el mismo dibujo relleno en verde suave y corrido 2 px detrás del
+ * trazo (estilo serigrafía). Así el pictograma gana volumen sin otro archivo.
+ */
 export function Simbolo({ id, className, titulo }: { id: string | null; className?: string; titulo?: string }) {
   const contenido = id ? SIMBOLOS[id] : undefined;
   if (!contenido) return null;
   return (
-    <svg viewBox="0 0 64 64" className={className} role={titulo ? "img" : undefined} aria-hidden={titulo ? undefined : true} {...TRAZO}>
+    <svg viewBox="0 0 64 64" className={className} role={titulo ? "img" : undefined} aria-hidden={titulo ? undefined : true}>
       {titulo && <title>{titulo}</title>}
-      {contenido}
+      <g fill="#bfe0d8" stroke="none" transform="translate(2 2)" opacity="0.9">
+        {contenido}
+      </g>
+      <g {...TRAZO}>{contenido}</g>
     </svg>
   );
 }

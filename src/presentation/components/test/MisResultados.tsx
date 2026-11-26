@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type { EntradaHistorial } from "@/application/use-cases/cliente/VerHistorial";
 import type { ContentPack, NivelId } from "@/domain/contenido/ContentPack";
 import { cn } from "@/presentation/lib/utils";
+import { Ilustracion } from "../ui/Ilustracion";
 import { BotonPrincipal, BotonSecundario, Pantalla } from "./piezas";
 
 const COLOR: Record<NivelId | "URGENTE", string> = {
@@ -40,6 +41,7 @@ export function MisResultados({
 
   return (
     <Pantalla
+      marca={pack.app.nombreCorto}
       textoAtras={ui.atras}
       onAtras={onSalir}
       pie={
@@ -49,36 +51,50 @@ export function MisResultados({
         </>
       }
     >
-      <h1 className="text-3xl font-bold text-primary">{ui.historialTitulo}</h1>
-      <p className="text-muted-foreground">{ui.historialNota}</p>
+      <div className="hero tarjeta flex items-center gap-4 p-4">
+        <Ilustracion id="historial-vacio" className="size-20 shrink-0" />
+        <div className="flex flex-col gap-1">
+          <h1 className="text-3xl font-bold">{ui.historialTitulo}</h1>
+          <p className="text-base text-muted-foreground">{ui.historialNota}</p>
+        </div>
+      </div>
       {pendientes !== null && (
-        <p className="rounded-xl bg-secondary p-3 text-base text-secondary-foreground">
+        <p className="flex items-center gap-2 rounded-2xl bg-secondary p-3 text-base text-secondary-foreground">
+          <span aria-hidden className={cn("size-3 shrink-0 rounded-full", pendientes > 0 ? "animate-pulse bg-[#f2b705]" : "bg-verde")} />
           {pendientes > 0 ? ui.pendientesEnvio.replace("{n}", String(pendientes)) : ui.todoEnviado}
         </p>
       )}
 
-      {lista?.length === 0 && <p className="rounded-xl bg-muted p-4">{ui.historialVacio}</p>}
+      {lista?.length === 0 && <p className="tarjeta p-4 text-center">{ui.historialVacio}</p>}
 
-      <ol className="flex flex-col gap-3">
+      <ol className="relative flex flex-col gap-4">
+        {lista && lista.length > 1 && (
+          <span aria-hidden className="absolute top-6 bottom-6 left-[0.95rem] w-0.5 bg-primary/20" />
+        )}
         {lista?.map(({ evaluacion: e, sintomasNuevos }) => {
           const clave = e.resultado.urgente ? "URGENTE" : e.resultado.nivel;
           return (
-            <li key={e.id} className="flex flex-col gap-2 rounded-2xl bg-card p-4 shadow-sm">
-              <div className="flex items-center gap-3">
-                <span aria-hidden className={cn("size-6 shrink-0 rounded-full", COLOR[clave])} />
-                <div className="flex flex-1 flex-col">
-                  <span className="font-bold">{pack.resultado[clave].titulo}</span>
-                  <span className="text-base text-muted-foreground">{fecha(e.creadaEn)}</span>
+            <li key={e.id} className="relative flex gap-3">
+              <span
+                aria-hidden
+                className={cn("z-10 mt-4 size-8 shrink-0 rounded-full shadow-suave ring-4 ring-background", COLOR[clave])}
+              />
+              <div className="tarjeta flex flex-1 flex-col gap-2 p-4">
+                <div className="flex items-start gap-3">
+                  <div className="flex flex-1 flex-col">
+                    <span className="text-sm font-bold text-muted-foreground uppercase">{fecha(e.creadaEn)}</span>
+                    <span className="font-bold">{pack.resultado[clave].titulo}</span>
+                  </div>
+                  <span className="insignia bg-crema text-foreground">
+                    {ui.puntaje} {e.resultado.puntaje}
+                  </span>
                 </div>
-                <span className="text-base text-muted-foreground">
-                  {ui.puntaje} {e.resultado.puntaje}
-                </span>
+                {sintomasNuevos.length > 0 && (
+                  <div className="rounded-xl bg-accent p-2 text-base text-accent-foreground">
+                    <span className="font-bold">{ui.sintomasNuevos}</span> {sintomasNuevos.map(etiqueta).join(", ")}
+                  </div>
+                )}
               </div>
-              {sintomasNuevos.length > 0 && (
-                <div className="rounded-xl bg-accent p-2 text-base text-accent-foreground">
-                  <span className="font-bold">{ui.sintomasNuevos}</span> {sintomasNuevos.map(etiqueta).join(", ")}
-                </div>
-              )}
             </li>
           );
         })}

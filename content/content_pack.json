@@ -11,7 +11,8 @@
     "botonTest": "Hacer el test",
     "botonHistorial": "Mis resultados",
     "enlacePosta": "Soy personal de salud",
-    "avisoDatosPrueba": "Datos de prueba"
+    "avisoDatosPrueba": "Datos de prueba",
+    "beneficios": ["Gratis", "Sin nombre", "Funciona sin internet"]
   },
 
   "ui": {
@@ -39,7 +40,10 @@
     "historialNota": "Tus resultados se guardan solo en este celular.",
     "sintomasNuevos": "Nuevo desde la vez anterior:",
     "pendientesEnvio": "Por enviar cuando haya señal: {n}",
-    "todoEnviado": "Todo enviado, sin nombre."
+    "todoEnviado": "Todo enviado, sin nombre.",
+    "nivel_VERDE": "Verde",
+    "nivel_AMARILLO": "Amarillo",
+    "nivel_ROJO": "Rojo"
   },
 
   "confianza": {

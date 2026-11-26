@@ -22,6 +22,7 @@ export const packSchema = z.object({
     botonHistorial: z.string(),
     enlacePosta: z.string(),
     avisoDatosPrueba: z.string(),
+    beneficios: z.array(z.string()),
   }),
   ui: z.object(Object.fromEntries(TEXTOS_UI.map((k) => [k, z.string()])) as Record<TextoUi, z.ZodString>),
   confianza: z.object({ frases: z.array(z.string()), boton: z.string() }),
