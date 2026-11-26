@@ -1,0 +1,31 @@
+{
+  "version": "1.0.0-demo",
+  "nota": "DATOS DE PRUEBA. Municipios y comunidades ficticios para la demo. Para usar zonas reales se reemplaza solo este archivo.",
+  "municipios": [
+    {
+      "codigo": "DEMO-01", "nombre": "Río Dorado (prueba)", "departamento": "Departamento de prueba",
+      "latCentro": -15.60, "lonCentro": -67.90,
+      "comunidades": ["Puerto Arena", "Las Balsas", "Villa Esperanza"]
+    },
+    {
+      "codigo": "DEMO-02", "nombre": "Cerro Verde (prueba)", "departamento": "Departamento de prueba",
+      "latCentro": -15.85, "lonCentro": -68.05,
+      "comunidades": ["Alto Mina", "San Pedro de la Quebrada", "Pampa Chica"]
+    },
+    {
+      "codigo": "DEMO-03", "nombre": "Tres Ríos (prueba)", "departamento": "Departamento de prueba",
+      "latCentro": -14.90, "lonCentro": -67.55,
+      "comunidades": ["Playa Ancha", "Isla Grande", "Puerto Nuevo"]
+    },
+    {
+      "codigo": "DEMO-04", "nombre": "Valle Escondido (prueba)", "departamento": "Departamento de prueba",
+      "latCentro": -16.10, "lonCentro": -67.70,
+      "comunidades": ["Santa Rosa del Valle", "Los Pinos"]
+    },
+    {
+      "codigo": "DEMO-05", "nombre": "Bajío del Sol (prueba)", "departamento": "Departamento de prueba",
+      "latCentro": -14.60, "lonCentro": -66.95,
+      "comunidades": ["Pescadores Unidos", "Remanso", "Bella Vista del Río"]
+    }
+  ]
+}

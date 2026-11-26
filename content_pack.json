@@ -1,0 +1,277 @@
+{
+  "version": "1.0.0-demo",
+  "nota": "Armado desde la matriz de variables y el paquete de contenido del desarrollador. Puntajes del documento de criterios; reglas con origen 'propuesta' deben aprobarse por el equipo clínico. Datos de prueba.",
+  "idioma": "es-BO",
+  "tratamiento": "tu",
+
+  "confianza": {
+    "frases": [
+      "Esto es para cuidar tu salud. No es control ni fiscalización.",
+      "No te pedimos nombre, carnet ni teléfono.",
+      "Tus respuestas se envían sin nombre cuando haya señal, para mejorar la atención de salud en tu zona."
+    ],
+    "boton": "Empezar"
+  },
+
+  "contexto": [
+    {
+      "id": "quienResponde",
+      "pregunta": "¿Quién responde?",
+      "opciones": [
+        { "id": "yo", "texto": "Yo, para mí" },
+        { "id": "promotor", "texto": "Soy promotor y ayudo a otra persona" }
+      ]
+    },
+    {
+      "id": "municipio",
+      "pregunta": "¿En qué municipio vives o trabajas?",
+      "fuente": "municipios.json",
+      "permiteNoDecir": true
+    },
+    {
+      "id": "embarazoLactancia",
+      "pregunta": "¿Tú o alguien de tu casa está embarazada o dando pecho?",
+      "opciones": [
+        { "id": "si", "texto": "Sí" },
+        { "id": "no", "texto": "No" },
+        { "id": "prefiero_no_decir", "texto": "Prefiero no decir" }
+      ]
+    },
+    {
+      "id": "ninosEnCasa",
+      "pregunta": "¿Hay niños pequeños en tu casa o cerca de donde se trabaja con mercurio?",
+      "opciones": [
+        { "id": "si", "texto": "Sí" },
+        { "id": "no", "texto": "No" },
+        { "id": "prefiero_no_decir", "texto": "Prefiero no decir" }
+      ]
+    },
+    {
+      "id": "rangoEdad",
+      "pregunta": "¿Cuántos años tienes?",
+      "opcional": true,
+      "opciones": [
+        { "id": "menos_18", "texto": "Menos de 18" },
+        { "id": "18_29", "texto": "18 a 29" },
+        { "id": "30_44", "texto": "30 a 44" },
+        { "id": "45_59", "texto": "45 a 59" },
+        { "id": "60_mas", "texto": "60 o más" },
+        { "id": "prefiero_no_decir", "texto": "Prefiero no decir" }
+      ]
+    },
+    {
+      "id": "sexo",
+      "pregunta": "Sexo",
+      "opcional": true,
+      "opciones": [
+        { "id": "masculino", "texto": "Masculino" },
+        { "id": "femenino", "texto": "Femenino" },
+        { "id": "prefiero_no_decir", "texto": "Prefiero no decir" }
+      ]
+    }
+  ],
+
+  "exposicion": {
+    "tope": 50,
+    "grupos": [
+      {
+        "id": "quema",
+        "codigoMatriz": "A1",
+        "seleccion": "unica",
+        "icono": "work-art-burn",
+        "pregunta": "¿Has estado cerca cuando se calienta la amalgama (la mezcla de oro y mercurio)?",
+        "opciones": [
+          { "id": "quema_cerrada_sin_retorta", "texto": "Sí, en un lugar cerrado o sin retorta", "puntos": 25, "motivo": "Estás cerca de la quema de amalgama en un lugar cerrado o sin retorta: ahí el vapor de mercurio se concentra." },
+          { "id": "quema_aire_libre_sin_proteccion", "texto": "Sí, al aire libre y sin respirador", "puntos": 15, "motivo": "Estás cerca de la quema de amalgama al aire libre sin respirador: el vapor se dispersa, pero igual se respira." },
+          { "id": "cerca_del_area", "texto": "No la caliento, pero trabajo cerca de donde se hace", "puntos": 10, "motivo": "Trabajas cerca de donde se calienta la amalgama: en el aire puede quedar vapor de mercurio." },
+          { "id": "no", "texto": "No", "puntos": 0 }
+        ]
+      },
+      {
+        "id": "manipulacion",
+        "codigoMatriz": "A2",
+        "seleccion": "unica",
+        "icono": "work-art-mercury",
+        "pregunta": "¿Tocas o manejas mercurio líquido?",
+        "opciones": [
+          { "id": "piel_descubierta", "texto": "Sí, con las manos descubiertas", "puntos": 10, "motivo": "Tocas mercurio con las manos descubiertas, sobre todo si hay heridas, y puede llegar a la boca o a la comida." },
+          { "id": "epp_inadecuado", "texto": "Sí, con guantes o barbijo común", "puntos": 5, "motivo": "Usas protección, pero el barbijo común y la N95 no frenan el vapor de mercurio." },
+          { "id": "respirador_cartucho", "texto": "Sí, con guantes y respirador con cartucho para mercurio", "puntos": 0 },
+          { "id": "no_manipula", "texto": "No", "puntos": 0 }
+        ]
+      },
+      {
+        "id": "tiempo",
+        "codigoMatriz": "A3",
+        "seleccion": "unica",
+        "icono": "work-art-years",
+        "pregunta": "¿Cuánto tiempo llevas trabajando cerca del mercurio?",
+        "opciones": [
+          { "id": "mas_de_2_anios", "texto": "Más de 2 años", "puntos": 10, "motivo": "Llevas más de 2 años cerca del mercurio: el cuerpo lo elimina despacio y puede acumularse." },
+          { "id": "entre_6m_y_2_anios", "texto": "Entre 6 meses y 2 años", "puntos": 5, "motivo": "Llevas entre 6 meses y 2 años cerca del mercurio." },
+          { "id": "menos_de_6m", "texto": "Menos de 6 meses o nunca", "puntos": 0 }
+        ],
+        "nota": "Cortes de 6 meses y 2 años: criterio del proyecto, configurable (no hay fuente que los fije)."
+      },
+      {
+        "id": "pescado",
+        "codigoMatriz": "A4",
+        "seleccion": "unica",
+        "icono": null,
+        "pregunta": "¿Cuántas veces por semana comes pescado de ríos de zonas mineras?",
+        "opciones": [
+          { "id": "mas_de_3_por_semana", "texto": "Más de 3 veces", "puntos": 5, "motivo": "Comes pescado de ríos de zonas mineras más de 3 veces por semana: el mercurio del río se acumula en los peces." },
+          { "id": "de_1_a_3_por_semana", "texto": "De 1 a 3 veces", "puntos": 0 },
+          { "id": "casi_nunca", "texto": "Casi nunca o nunca", "puntos": 0 }
+        ]
+      }
+    ]
+  },
+
+  "alarmaAguda": {
+    "id": "alarmaAguda",
+    "mostrarSi": { "grupo": "quema", "noEs": ["no"] },
+    "pregunta": "En las 24 horas después de una quema, ¿tuviste falta de aire, dolor de pecho, tos fuerte o fiebre?",
+    "opciones": [
+      { "id": "si", "texto": "Sí" },
+      { "id": "no", "texto": "No" }
+    ],
+    "siEsSi": "cortarTestYMostrarUrgencia"
+  },
+
+  "sintomas": {
+    "tope": 40,
+    "respuestas": [
+      { "id": "si", "texto": "Sí" },
+      { "id": "no", "texto": "No" },
+      { "id": "duda", "texto": "No sé" }
+    ],
+    "nota": "Cada grupo suma una sola vez. 'duda' suma 0 pero se muestra como algo a conversar en la posta.",
+    "grupos": [
+      { "id": "temblor", "codigoMatriz": "B1", "puntos": 12, "icono": "sym-tremor", "pregunta": "¿Has notado que te tiemblan las manos, los párpados o la lengua?", "etiqueta": "Temblor en manos, párpados o lengua" },
+      { "id": "hormigueo", "codigoMatriz": "B1", "puntos": 8, "icono": "sym-tingling", "pregunta": "¿Sientes hormigueo o adormecimiento en las manos o los pies?", "etiqueta": "Hormigueo o adormecimiento" },
+      { "id": "coordinacion", "codigoMatriz": "B1", "puntos": 8, "icono": "sym-balance", "pregunta": "¿Te cuesta mantener el equilibrio o coordinar movimientos, como abotonarte la ropa?", "etiqueta": "Dificultad de equilibrio o coordinación" },
+      { "id": "eretismo", "codigoMatriz": "B2", "puntos": 6, "icono": "sym-memory", "pregunta": "¿Has notado irritabilidad, problemas para dormir, olvidos o dificultad para concentrarte que no son normales en ti?", "etiqueta": "Cambios de ánimo, sueño, memoria o concentración" },
+      { "id": "oral", "codigoMatriz": "B3", "puntos": 4, "icono": "sym-mouth", "pregunta": "¿Tienes sabor a metal en la boca o encías inflamadas o que sangran?", "etiqueta": "Sabor metálico o encías inflamadas" },
+      { "id": "general", "codigoMatriz": "B3", "puntos": 2, "icono": "sym-fatigue", "pregunta": "¿Sientes cansancio que no se pasa, dolores de cabeza frecuentes o falta de aire después de una quema?", "etiqueta": "Cansancio, dolor de cabeza o falta de aire tras quema" }
+    ],
+    "gruposNeurologicos": ["temblor", "hormigueo", "coordinacion"]
+  },
+
+  "niveles": [
+    { "id": "VERDE", "min": 0, "max": 25 },
+    { "id": "AMARILLO", "min": 26, "max": 55 },
+    { "id": "ROJO", "min": 56, "max": 90 }
+  ],
+  "ordenNiveles": ["VERDE", "AMARILLO", "ROJO"],
+
+  "definiciones": {
+    "sintomasMarcados": "temblor = si Y (hormigueo = si O coordinacion = si)",
+    "quemaSinProteccion": ["quema_cerrada_sin_retorta", "quema_aire_libre_sin_proteccion"],
+    "exposicionVapor": "quema != no O manipulacion != no_manipula",
+    "pescadoFrecuente": ["mas_de_3_por_semana"]
+  },
+
+  "reglas": [
+    { "id": "alerta_aguda", "prioridad": 1, "activa": true, "origen": "propuesta", "condicion": "alarmaAguda = si", "efecto": { "nivelMinimo": "ROJO", "urgente": true }, "motivo": "Tuviste síntomas respiratorios o fiebre después de una quema. Puede ser una urgencia." },
+    { "id": "rojo_neuro_y_quema", "prioridad": 2, "activa": true, "origen": "documento", "condicion": "sintomasMarcados Y quema en quemaSinProteccion", "efecto": { "nivelMinimo": "ROJO" }, "motivo": "Tienes temblor junto con hormigueo o falta de coordinación, y estás cerca de quemas sin protección." },
+    { "id": "laboratorio", "prioridad": 3, "activa": true, "origen": "documento_modificado", "condicion": "hay resultado de laboratorio vigente", "efecto": { "subeSiMayor": true, "siNormalYSintomasMarcados": "AMARILLO" }, "motivo": "Se consideró el resultado de laboratorio." },
+    { "id": "grupo_vulnerable", "prioridad": 4, "activa": true, "origen": "propuesta", "condicion": "(embarazoLactancia = si O ninosEnCasa = si) Y puntajeExposicion > 0", "efecto": { "nivelMinimo": "AMARILLO" }, "motivo": "Hay embarazo, lactancia o niños pequeños cerca: el mercurio afecta más a bebés y niños." },
+    { "id": "pescado_y_neuro", "prioridad": 5, "activa": true, "origen": "propuesta", "condicion": "pescado en pescadoFrecuente Y algún grupo neurológico = si", "efecto": { "nivelMinimo": "ROJO" }, "motivo": "Comes pescado de ríos mineros con frecuencia y tienes síntomas que pueden afectar los nervios." },
+    { "id": "quema_cerrada_min_amarillo", "prioridad": 6, "activa": true, "origen": "propuesta", "condicion": "quema = quema_cerrada_sin_retorta", "efecto": { "nivelMinimo": "AMARILLO" }, "motivo": "La quema en lugar cerrado o sin retorta es la exposición más alta, aunque hoy no tengas síntomas." }
+  ],
+  "notaReglas": "La salida 'reglas' lista todas las reglas cuya condición se cumple, ordenadas por prioridad, aunque no cambien el nivel. Ninguna regla baja el nivel.",
+
+  "muestraSugerida": {
+    "soloExposicionVapor": "ORINA",
+    "soloPescadoFrecuente": "CABELLO_O_SANGRE",
+    "ambas": "ORINA_Y_SANGRE",
+    "ninguna": null,
+    "textos": {
+      "ORINA": "Orina (con creatinina). Es la mejor muestra para el mercurio que se respira o se toca.",
+      "CABELLO_O_SANGRE": "Cabello o sangre. Reflejan el mercurio que llega por el pescado.",
+      "ORINA_Y_SANGRE": "Orina y sangre, porque hay contacto con mercurio y también consumo de pescado."
+    },
+    "mostrarDesdeNivel": "AMARILLO"
+  },
+
+  "laboratorio": {
+    "vigenciaDias": 90,
+    "rangos": [
+      { "muestra": "ORINA", "unidad": "ug/g_creatinina", "unidadTexto": "µg/g de creatinina", "verdeHasta": 5, "amarilloHasta": 20 },
+      { "muestra": "ORINA", "unidad": "ug/L", "unidadTexto": "µg/L", "verdeHasta": 7, "amarilloHasta": 25 },
+      { "muestra": "SANGRE", "unidad": "ug/L", "unidadTexto": "µg/L", "verdeHasta": 5, "amarilloHasta": 15 },
+      { "muestra": "CABELLO", "unidad": "ug/g", "unidadTexto": "µg/g", "verdeHasta": 1, "amarilloHasta": 2.3 }
+    ],
+    "notaRangos": "Valores guía (HBM-I / HBM-II). Hasta verdeHasta = VERDE; mayor a verdeHasta hasta amarilloHasta = AMARILLO; mayor = ROJO. Validar con normativa nacional y el laboratorio.",
+    "guiaMuestraOrina": [
+      "No comer pescado ni mariscos 48 a 72 horas antes.",
+      "Si el médico lo indica, suspender suplementos y medicamentos no esenciales.",
+      "Frasco de plástico limpio, sin tapa metálica.",
+      "Orina de 24 horas o al azar, siempre con creatinina.",
+      "Mantener refrigerada hasta enviarla.",
+      "Lavarse manos y cara y cambiarse la ropa de trabajo antes; no tomarla en el lugar de trabajo."
+    ]
+  },
+
+  "resultado": {
+    "VERDE": {
+      "titulo": "Por ahora no vemos señales importantes",
+      "mensaje": "Si trabajas cerca del mercurio, cuidarte hoy evita problemas mañana.",
+      "acciones": [
+        "Usa retorta para recuperar el mercurio.",
+        "Usa guantes y respirador con cartucho para vapor de mercurio. El barbijo común y la N95 no frenan el vapor.",
+        "No lleves la ropa ni el calzado de trabajo a tu casa.",
+        "Repite este test cada cierto tiempo."
+      ]
+    },
+    "AMARILLO": {
+      "titulo": "Conviene que te revisen en la posta",
+      "mensaje": "Estás en contacto con mercurio o tienes algunos cambios que vale la pena revisar. No es urgente, pero no lo dejes pasar.",
+      "acciones": [
+        "Ve a una consulta en la posta y cuenta tu trabajo y lo que notaste.",
+        "Desde hoy, no quemes amalgama en lugares cerrados ni dentro de la casa.",
+        "Avisa en la posta si hay embarazo, lactancia o niños cerca.",
+        "Pregunta por un análisis según la muestra sugerida."
+      ]
+    },
+    "ROJO": {
+      "titulo": "Ve a la posta pronto",
+      "mensaje": "Tus respuestas muestran señales que conviene revisar pronto. Esto no es un diagnóstico: solo el personal de salud puede decir qué está pasando.",
+      "acciones": [
+        "Ve al centro de salud lo antes posible.",
+        "Pide un análisis según la muestra sugerida.",
+        "Hasta la revisión, deja de quemar y de tocar mercurio si puedes hacerlo con seguridad.",
+        "No tomes medicamentos ni remedios caseros para \"sacar el mercurio\": pueden hacer daño."
+      ]
+    },
+    "URGENTE": {
+      "titulo": "Busca atención de salud ahora",
+      "mensaje": "La falta de aire, el dolor de pecho, la tos fuerte o la fiebre después de una quema pueden ser una urgencia. Ve al centro de salud más cercano lo antes posible.",
+      "acciones": [
+        "Aléjate del lugar de la quema.",
+        "Ve al centro de salud más cercano o pide ayuda para llegar."
+      ]
+    },
+    "alarmasInmediatas": [
+      "Falta de aire, dolor de pecho, tos fuerte o fiebre después de quemar.",
+      "Vómitos o diarrea intensos con sabor metálico.",
+      "Temblor que impide escribir, comer o hablar bien.",
+      "No poder caminar o mantener el equilibrio.",
+      "Confusión, alucinaciones o cambios fuertes de conducta.",
+      "Síntomas en una mujer embarazada, en lactancia o en un niño."
+    ],
+    "aviso": "Esta prueba no confirma ni descarta una intoxicación por mercurio.",
+    "queContarEnLaPosta": "Cuenta en la posta qué trabajo haces, desde cuándo, y los cambios que notaste."
+  },
+
+  "posta": {
+    "diferenciales": [
+      { "sintoma": "temblor", "otrasCausas": "Temblor fisiológico exagerado, ansiedad, hipertiroidismo, abstinencia de alcohol, otros tóxicos o medicamentos (plomo, arsénico, litio, antidepresivos), temblor esencial, Parkinson." },
+      { "sintoma": "hormigueo", "otrasCausas": "Deficiencia de vitamina B12; otras neuropatías, por ejemplo por diabetes." },
+      { "sintoma": "eretismo", "otrasCausas": "Ansiedad, depresión, estrés, hipertiroidismo." },
+      { "sintoma": "oral", "otrasCausas": "Gingivitis por higiene oral o infección." }
+    ],
+    "notaDiferencial": "No todo síntoma en un minero es mercurio: integrar exposición, examen y laboratorio."
+  }
+}

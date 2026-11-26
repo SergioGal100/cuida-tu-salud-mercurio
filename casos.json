@@ -1,0 +1,182 @@
+{
+  "version": "1.0.0-demo",
+  "nota": "Casos de prueba del motor evaluar(respuestas, pack, opciones). Una respuesta ausente suma 0. 'reglas' = todas las reglas cuya condición se cumple, en orden de prioridad. 'fechaReferencia' sustituye al reloj para que el motor sea puro.",
+  "casos": [
+    {
+      "id": "01_sin_exposicion_sin_sintomas",
+      "respuestas": {
+        "contexto": { "embarazoLactancia": "no", "ninosEnCasa": "no" },
+        "quema": "no", "manipulacion": "no_manipula", "tiempo": "menos_de_6m", "pescado": "casi_nunca",
+        "sintomas": { "temblor": "no", "hormigueo": "no", "coordinacion": "no", "eretismo": "no", "oral": "no", "general": "no" }
+      },
+      "esperado": { "puntajeExposicion": 0, "puntajeSintomas": 0, "puntaje": 0, "nivel": "VERDE", "urgente": false, "reglas": [], "muestraSugerida": null, "dudas": [] }
+    },
+    {
+      "id": "02_exposicion_moderada_sin_sintomas",
+      "respuestas": {
+        "contexto": { "embarazoLactancia": "no", "ninosEnCasa": "no" },
+        "quema": "quema_aire_libre_sin_proteccion", "manipulacion": "epp_inadecuado", "tiempo": "mas_de_2_anios", "pescado": "casi_nunca",
+        "alarmaAguda": "no",
+        "sintomas": { "temblor": "no", "hormigueo": "no", "coordinacion": "no", "eretismo": "no", "oral": "no", "general": "no" }
+      },
+      "esperado": { "puntajeExposicion": 30, "puntajeSintomas": 0, "puntaje": 30, "nivel": "AMARILLO", "urgente": false, "reglas": [], "muestraSugerida": "ORINA", "dudas": [] }
+    },
+    {
+      "id": "03_quema_cerrada_sola_sube_a_amarillo",
+      "respuestas": {
+        "contexto": { "embarazoLactancia": "no", "ninosEnCasa": "no" },
+        "quema": "quema_cerrada_sin_retorta", "manipulacion": "no_manipula", "tiempo": "menos_de_6m", "pescado": "casi_nunca",
+        "alarmaAguda": "no",
+        "sintomas": { "temblor": "no", "hormigueo": "no", "coordinacion": "no", "eretismo": "no", "oral": "no", "general": "no" }
+      },
+      "esperado": { "puntajeExposicion": 25, "puntajeSintomas": 0, "puntaje": 25, "nivel": "AMARILLO", "urgente": false, "reglas": ["quema_cerrada_min_amarillo"], "muestraSugerida": "ORINA", "dudas": [] }
+    },
+    {
+      "id": "04_maximo_90",
+      "respuestas": {
+        "contexto": { "embarazoLactancia": "no", "ninosEnCasa": "no" },
+        "quema": "quema_cerrada_sin_retorta", "manipulacion": "piel_descubierta", "tiempo": "mas_de_2_anios", "pescado": "mas_de_3_por_semana",
+        "alarmaAguda": "no",
+        "sintomas": { "temblor": "si", "hormigueo": "si", "coordinacion": "si", "eretismo": "si", "oral": "si", "general": "si" }
+      },
+      "esperado": { "puntajeExposicion": 50, "puntajeSintomas": 40, "puntaje": 90, "nivel": "ROJO", "urgente": false, "reglas": ["rojo_neuro_y_quema", "pescado_y_neuro", "quema_cerrada_min_amarillo"], "muestraSugerida": "ORINA_Y_SANGRE", "dudas": [] }
+    },
+    {
+      "id": "05_alerta_aguda_corta_el_test",
+      "respuestas": {
+        "contexto": { "embarazoLactancia": "no", "ninosEnCasa": "no" },
+        "quema": "quema_aire_libre_sin_proteccion",
+        "alarmaAguda": "si"
+      },
+      "esperado": { "puntajeExposicion": 15, "puntajeSintomas": 0, "puntaje": 15, "nivel": "ROJO", "urgente": true, "reglas": ["alerta_aguda"], "muestraSugerida": "ORINA", "dudas": [] }
+    },
+    {
+      "id": "06_neuro_y_quema_sube_a_rojo",
+      "respuestas": {
+        "contexto": { "embarazoLactancia": "no", "ninosEnCasa": "no" },
+        "quema": "quema_aire_libre_sin_proteccion", "manipulacion": "no_manipula", "tiempo": "menos_de_6m", "pescado": "casi_nunca",
+        "alarmaAguda": "no",
+        "sintomas": { "temblor": "si", "hormigueo": "no", "coordinacion": "si", "eretismo": "no", "oral": "no", "general": "no" }
+      },
+      "esperado": { "puntajeExposicion": 15, "puntajeSintomas": 20, "puntaje": 35, "nivel": "ROJO", "urgente": false, "reglas": ["rojo_neuro_y_quema"], "muestraSugerida": "ORINA", "dudas": [] }
+    },
+    {
+      "id": "07_temblor_cerca_del_area_queda_verde",
+      "respuestas": {
+        "contexto": { "embarazoLactancia": "no", "ninosEnCasa": "no" },
+        "quema": "cerca_del_area", "manipulacion": "no_manipula", "tiempo": "menos_de_6m", "pescado": "casi_nunca",
+        "alarmaAguda": "no",
+        "sintomas": { "temblor": "si", "hormigueo": "no", "coordinacion": "no", "eretismo": "no", "oral": "no", "general": "no" }
+      },
+      "esperado": { "puntajeExposicion": 10, "puntajeSintomas": 12, "puntaje": 22, "nivel": "VERDE", "urgente": false, "reglas": [], "muestraSugerida": "ORINA", "dudas": [] }
+    },
+    {
+      "id": "08_pescador_con_sintomas_neurologicos",
+      "respuestas": {
+        "contexto": { "embarazoLactancia": "no", "ninosEnCasa": "no" },
+        "quema": "no", "manipulacion": "no_manipula", "tiempo": "menos_de_6m", "pescado": "mas_de_3_por_semana",
+        "sintomas": { "temblor": "si", "hormigueo": "si", "coordinacion": "si", "eretismo": "si", "oral": "no", "general": "no" }
+      },
+      "esperado": { "puntajeExposicion": 5, "puntajeSintomas": 34, "puntaje": 39, "nivel": "ROJO", "urgente": false, "reglas": ["pescado_y_neuro"], "muestraSugerida": "CABELLO_O_SANGRE", "dudas": [] }
+    },
+    {
+      "id": "09_grupo_vulnerable_con_exposicion",
+      "respuestas": {
+        "contexto": { "embarazoLactancia": "si", "ninosEnCasa": "no" },
+        "quema": "no", "manipulacion": "no_manipula", "tiempo": "menos_de_6m", "pescado": "mas_de_3_por_semana",
+        "sintomas": { "temblor": "no", "hormigueo": "no", "coordinacion": "no", "eretismo": "no", "oral": "no", "general": "no" }
+      },
+      "esperado": { "puntajeExposicion": 5, "puntajeSintomas": 0, "puntaje": 5, "nivel": "AMARILLO", "urgente": false, "reglas": ["grupo_vulnerable"], "muestraSugerida": "CABELLO_O_SANGRE", "dudas": [] }
+    },
+    {
+      "id": "10_grupo_vulnerable_sin_exposicion",
+      "respuestas": {
+        "contexto": { "embarazoLactancia": "si", "ninosEnCasa": "si" },
+        "quema": "no", "manipulacion": "no_manipula", "tiempo": "menos_de_6m", "pescado": "casi_nunca",
+        "sintomas": { "temblor": "no", "hormigueo": "no", "coordinacion": "no", "eretismo": "no", "oral": "no", "general": "no" }
+      },
+      "esperado": { "puntajeExposicion": 0, "puntajeSintomas": 0, "puntaje": 0, "nivel": "VERDE", "urgente": false, "reglas": [], "muestraSugerida": null, "dudas": [] }
+    },
+    {
+      "id": "11_duda_suma_cero_y_limite_25",
+      "respuestas": {
+        "contexto": { "embarazoLactancia": "no", "ninosEnCasa": "no" },
+        "quema": "quema_aire_libre_sin_proteccion", "manipulacion": "epp_inadecuado", "tiempo": "entre_6m_y_2_anios", "pescado": "casi_nunca",
+        "alarmaAguda": "no",
+        "sintomas": { "temblor": "duda", "hormigueo": "duda", "coordinacion": "no", "eretismo": "no", "oral": "no", "general": "no" }
+      },
+      "esperado": { "puntajeExposicion": 25, "puntajeSintomas": 0, "puntaje": 25, "nivel": "VERDE", "urgente": false, "reglas": [], "muestraSugerida": "ORINA", "dudas": ["temblor", "hormigueo"] }
+    },
+    {
+      "id": "12_limite_26_amarillo",
+      "respuestas": {
+        "contexto": { "embarazoLactancia": "no", "ninosEnCasa": "no" },
+        "quema": "cerca_del_area", "manipulacion": "piel_descubierta", "tiempo": "menos_de_6m", "pescado": "casi_nunca",
+        "alarmaAguda": "no",
+        "sintomas": { "temblor": "no", "hormigueo": "no", "coordinacion": "no", "eretismo": "si", "oral": "no", "general": "no" }
+      },
+      "esperado": { "puntajeExposicion": 20, "puntajeSintomas": 6, "puntaje": 26, "nivel": "AMARILLO", "urgente": false, "reglas": [], "muestraSugerida": "ORINA", "dudas": [] }
+    },
+    {
+      "id": "13_limite_55_amarillo",
+      "respuestas": {
+        "contexto": { "embarazoLactancia": "no", "ninosEnCasa": "no" },
+        "quema": "quema_cerrada_sin_retorta", "manipulacion": "piel_descubierta", "tiempo": "mas_de_2_anios", "pescado": "casi_nunca",
+        "alarmaAguda": "no",
+        "sintomas": { "temblor": "no", "hormigueo": "no", "coordinacion": "no", "eretismo": "si", "oral": "si", "general": "no" }
+      },
+      "esperado": { "puntajeExposicion": 45, "puntajeSintomas": 10, "puntaje": 55, "nivel": "AMARILLO", "urgente": false, "reglas": ["quema_cerrada_min_amarillo"], "muestraSugerida": "ORINA", "dudas": [] }
+    },
+    {
+      "id": "14_limite_56_rojo",
+      "respuestas": {
+        "contexto": { "embarazoLactancia": "no", "ninosEnCasa": "no" },
+        "quema": "quema_cerrada_sin_retorta", "manipulacion": "piel_descubierta", "tiempo": "mas_de_2_anios", "pescado": "mas_de_3_por_semana",
+        "alarmaAguda": "no",
+        "sintomas": { "temblor": "no", "hormigueo": "no", "coordinacion": "no", "eretismo": "si", "oral": "no", "general": "no" }
+      },
+      "esperado": { "puntajeExposicion": 50, "puntajeSintomas": 6, "puntaje": 56, "nivel": "ROJO", "urgente": false, "reglas": ["quema_cerrada_min_amarillo"], "muestraSugerida": "ORINA_Y_SANGRE", "dudas": [] }
+    },
+    {
+      "id": "15_laboratorio_alto_sube_a_rojo",
+      "respuestas": {
+        "contexto": { "embarazoLactancia": "no", "ninosEnCasa": "no" },
+        "quema": "quema_aire_libre_sin_proteccion", "manipulacion": "epp_inadecuado", "tiempo": "mas_de_2_anios", "pescado": "casi_nunca",
+        "alarmaAguda": "no",
+        "sintomas": { "temblor": "no", "hormigueo": "no", "coordinacion": "no", "eretismo": "no", "oral": "no", "general": "no" }
+      },
+      "opciones": {
+        "fechaReferencia": "2026-11-26",
+        "laboratorio": { "muestra": "ORINA", "unidad": "ug/g_creatinina", "valor": 25, "fechaToma": "2026-11-20" }
+      },
+      "esperado": { "puntajeExposicion": 30, "puntajeSintomas": 0, "puntaje": 30, "nivel": "ROJO", "nivelLaboratorio": "ROJO", "urgente": false, "reglas": ["laboratorio"], "muestraSugerida": "ORINA", "dudas": [], "advertencias": [] }
+    },
+    {
+      "id": "16_laboratorio_normal_con_sintomas_marcados",
+      "respuestas": {
+        "contexto": { "embarazoLactancia": "no", "ninosEnCasa": "no" },
+        "quema": "no", "manipulacion": "no_manipula", "tiempo": "menos_de_6m", "pescado": "casi_nunca",
+        "sintomas": { "temblor": "si", "hormigueo": "si", "coordinacion": "no", "eretismo": "no", "oral": "no", "general": "no" }
+      },
+      "opciones": {
+        "fechaReferencia": "2026-11-26",
+        "laboratorio": { "muestra": "ORINA", "unidad": "ug/L", "valor": 3, "fechaToma": "2026-11-10" }
+      },
+      "esperado": { "puntajeExposicion": 0, "puntajeSintomas": 20, "puntaje": 20, "nivel": "AMARILLO", "nivelLaboratorio": "VERDE", "urgente": false, "reglas": ["laboratorio"], "muestraSugerida": null, "dudas": [], "advertencias": [] }
+    },
+    {
+      "id": "17_laboratorio_vencido_se_ignora",
+      "respuestas": {
+        "contexto": { "embarazoLactancia": "no", "ninosEnCasa": "no" },
+        "quema": "quema_aire_libre_sin_proteccion", "manipulacion": "epp_inadecuado", "tiempo": "mas_de_2_anios", "pescado": "casi_nunca",
+        "alarmaAguda": "no",
+        "sintomas": { "temblor": "no", "hormigueo": "no", "coordinacion": "no", "eretismo": "no", "oral": "no", "general": "no" }
+      },
+      "opciones": {
+        "fechaReferencia": "2026-11-26",
+        "laboratorio": { "muestra": "ORINA", "unidad": "ug/g_creatinina", "valor": 25, "fechaToma": "2026-07-01" }
+      },
+      "esperado": { "puntajeExposicion": 30, "puntajeSintomas": 0, "puntaje": 30, "nivel": "AMARILLO", "nivelLaboratorio": null, "urgente": false, "reglas": [], "muestraSugerida": "ORINA", "dudas": [], "advertencias": ["laboratorio_vencido"] }
+    }
+  ]
+}
