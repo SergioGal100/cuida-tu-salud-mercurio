@@ -1,0 +1,169 @@
+// Modelo de datos (plan técnico). Ninguna tabla guarda nombre, carnet,
+// teléfono, fecha de nacimiento, coordenadas exactas ni IP.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_DIRECTA")
+}
+
+enum Origen {
+  AUTO
+  PROMOTOR
+  POSTA
+}
+
+enum Nivel {
+  VERDE
+  AMARILLO
+  ROJO
+}
+
+enum Rol {
+  MEDICO
+  EPIDEMIOLOGO
+  ADMIN
+}
+
+enum EstadoConsulta {
+  ABIERTA
+  ESPERA_LABORATORIO
+  CERRADA
+}
+
+enum Muestra {
+  ORINA
+  SANGRE
+  CABELLO
+}
+
+enum EstadoAlerta {
+  ABIERTA
+  VISTA
+  CERRADA
+}
+
+/// Catálogo fijo; el mismo que se descarga al celular (content/municipios.json).
+model Municipio {
+  codigo           String            @id
+  nombre           String
+  departamento     String
+  latCentro        Float             @map("lat_centro")
+  lonCentro        Float             @map("lon_centro")
+  establecimientos Establecimiento[]
+  evaluaciones     Evaluacion[]
+  alertas          Alerta[]
+
+  @@map("municipio")
+}
+
+model Establecimiento {
+  id              String     @id @default(uuid()) @db.Uuid
+  nombre          String
+  municipioCodigo String     @map("municipio_codigo")
+  nivelAtencion   String     @map("nivel_atencion")
+  municipio       Municipio  @relation(fields: [municipioCodigo], references: [codigo])
+  usuarios        Usuario[]
+  consultas       Consulta[]
+
+  @@map("establecimiento")
+}
+
+/// Solo personal de salud.
+model Usuario {
+  id                String          @id @default(uuid()) @db.Uuid
+  email             String          @unique
+  passwordHash      String          @map("password_hash")
+  rol               Rol
+  establecimientoId String?         @map("establecimiento_id") @db.Uuid
+  activo            Boolean         @default(true)
+  establecimiento   Establecimiento? @relation(fields: [establecimientoId], references: [id])
+  consultas         Consulta[]
+
+  @@map("usuario")
+}
+
+/// Cada fila es independiente: sin id de persona ni de dispositivo.
+model Evaluacion {
+  id                  String    @id @db.Uuid
+  origen              Origen
+  creadaEnDispositivo DateTime  @map("creada_en_dispositivo") @db.Timestamptz
+  recibidaEn          DateTime  @default(now()) @map("recibida_en") @db.Timestamptz
+  municipioCodigo     String?   @map("municipio_codigo")
+  rangoEdad           String?   @map("rango_edad")
+  sexo                String?
+  embarazoLactancia   String?   @map("embarazo_lactancia")
+  ninosEnCasa         String?   @map("ninos_en_casa")
+  respuestas          Json      @db.JsonB
+  puntaje             Int
+  nivel               Nivel
+  urgente             Boolean
+  reglas              Json      @db.JsonB
+  /// Resultado completo calculado por el servidor.
+  resultado           Json      @db.JsonB
+  versionPack         String    @map("version_pack")
+  /// true si el cálculo del celular no coincide con el del servidor.
+  discrepancia        Boolean   @default(false)
+  municipio           Municipio? @relation(fields: [municipioCodigo], references: [codigo])
+  consulta            Consulta?
+
+  @@index([municipioCodigo, nivel])
+  @@index([creadaEnDispositivo])
+  @@index([origen])
+  @@map("evaluacion")
+}
+
+/// evaluacionId apunta a la entrevista hecha en la posta (origen POSTA).
+model Consulta {
+  id                String                 @id @default(uuid()) @db.Uuid
+  evaluacionId      String                 @unique @map("evaluacion_id") @db.Uuid
+  establecimientoId String                 @map("establecimiento_id") @db.Uuid
+  usuarioId         String                 @map("usuario_id") @db.Uuid
+  fecha             DateTime               @default(now()) @db.Timestamptz
+  examen            Json                   @default("{}") @db.JsonB
+  conducta          String?
+  nivelFinal        Nivel                  @map("nivel_final")
+  estado            EstadoConsulta         @default(ABIERTA)
+  evaluacion        Evaluacion             @relation(fields: [evaluacionId], references: [id])
+  establecimiento   Establecimiento        @relation(fields: [establecimientoId], references: [id])
+  usuario           Usuario                @relation(fields: [usuarioId], references: [id])
+  laboratorios      ResultadoLaboratorio[]
+
+  @@index([establecimientoId, estado])
+  @@map("consulta")
+}
+
+model ResultadoLaboratorio {
+  id          String   @id @default(uuid()) @db.Uuid
+  consultaId  String   @map("consulta_id") @db.Uuid
+  muestra     Muestra
+  valor       Float
+  unidad      String
+  fechaToma   DateTime @map("fecha_toma") @db.Date
+  laboratorio String?
+  nivel       Nivel?
+  creadoEn    DateTime @default(now()) @map("creado_en") @db.Timestamptz
+  consulta    Consulta @relation(fields: [consultaId], references: [id])
+
+  @@map("resultado_laboratorio")
+}
+
+/// La genera la tarea de alertas (o el botón "recalcular alertas").
+model Alerta {
+  id              String       @id @default(uuid()) @db.Uuid
+  municipioCodigo String       @map("municipio_codigo")
+  regla           String
+  desde           DateTime     @db.Timestamptz
+  hasta           DateTime     @db.Timestamptz
+  conteo          Int
+  estado          EstadoAlerta @default(ABIERTA)
+  creadaEn        DateTime     @default(now()) @map("creada_en") @db.Timestamptz
+  municipio       Municipio    @relation(fields: [municipioCodigo], references: [codigo])
+
+  @@index([estado])
+  @@map("alerta")
+}
