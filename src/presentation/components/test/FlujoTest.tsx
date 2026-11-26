@@ -16,10 +16,28 @@ export interface PropsFlujoTest {
   realizarTest: (respuestas: Respuestas) => Promise<Evaluacion>;
   onSalir: () => void;
   onVerHistorial?: () => void;
+  /**
+   * Modo entrevista (posta): sin pantalla de confianza ni "¿quién responde?",
+   * y al terminar se guarda la consulta en vez de mostrar el resultado.
+   */
+  entrevista?: {
+    alTerminar: (respuestas: Respuestas) => Promise<void>;
+    textoGuardando: string;
+    textoError: string;
+    textoReintentar: string;
+  };
+}
+
+function visibles(pack: ContentPack, r: Respuestas, entrevista: boolean): Paso[] {
+  const pasos = pasosDelTest(pack, r);
+  if (!entrevista) return pasos;
+  return pasos.filter(
+    (p) => p.tipo !== "confianza" && !(p.tipo === "contexto" && p.ids.includes("quienResponde")),
+  );
 }
 
 /** Todo el test en una sola ruta: los pasos son estado de React, no páginas. */
-export function FlujoTest({ pack, municipios, realizarTest, onSalir, onVerHistorial }: PropsFlujoTest) {
+export function FlujoTest({ pack, municipios, realizarTest, onSalir, onVerHistorial, entrevista }: PropsFlujoTest) {
   const [indice, setIndice] = useState(0);
   const [respuestas, setRespuestas] = useState<Respuestas>({});
   const [evaluacion, setEvaluacion] = useState<Evaluacion | null>(null);
@@ -28,15 +46,18 @@ export function FlujoTest({ pack, municipios, realizarTest, onSalir, onVerHistor
   // Cada paso empieza arriba (si no, la pantalla siguiente queda a media altura).
   useEffect(() => window.scrollTo(0, 0), [indice]);
 
-  const pasos = useMemo(() => pasosDelTest(pack, respuestas), [pack, respuestas]);
+  const esEntrevista = entrevista !== undefined;
+  const pasos = useMemo(() => visibles(pack, respuestas, esEntrevista), [pack, respuestas, esEntrevista]);
   const paso: Paso = pasos[Math.min(indice, pasos.length - 1)];
   const ui = pack.ui;
   const totalPreguntas = pasos.filter((p) => p.tipo !== "confianza" && p.tipo !== "resultado").length;
   const esPromotor = respuestas.contexto?.quienResponde === "promotor";
 
   async function terminar(finales: Respuestas) {
+    setError(false);
     try {
-      setEvaluacion(await realizarTest(finales));
+      if (entrevista) await entrevista.alTerminar(finales);
+      else setEvaluacion(await realizarTest(finales));
     } catch {
       setError(true);
     }
@@ -45,7 +66,7 @@ export function FlujoTest({ pack, municipios, realizarTest, onSalir, onVerHistor
   /** Guarda la respuesta y avanza; si el siguiente paso es el resultado, evalúa. */
   function responder(nuevas: Respuestas) {
     setRespuestas(nuevas);
-    const siguientes = pasosDelTest(pack, nuevas);
+    const siguientes = visibles(pack, nuevas, esEntrevista);
     const proximo = indice + 1;
     setIndice(proximo);
     if (siguientes[proximo]?.tipo === "resultado") void terminar(nuevas);
@@ -63,14 +84,16 @@ export function FlujoTest({ pack, municipios, realizarTest, onSalir, onVerHistor
     setIndice(0);
   }
 
-  const atras = indice > 0 && paso.tipo !== "resultado" ? () => setIndice(indice - 1) : undefined;
+  const atras =
+    paso.tipo === "resultado" ? undefined : indice > 0 ? () => setIndice(indice - 1) : esEntrevista ? onSalir : undefined;
+  const numero = esEntrevista ? indice + 1 : indice;
   const progreso =
     paso.tipo === "confianza" || paso.tipo === "resultado"
       ? undefined
       : {
-          actual: indice,
+          actual: numero,
           total: totalPreguntas,
-          texto: ui.progreso.replace("{actual}", String(indice)).replace("{total}", String(totalPreguntas)),
+          texto: ui.progreso.replace("{actual}", String(numero)).replace("{total}", String(totalPreguntas)),
         };
 
   switch (paso.tipo) {
@@ -202,6 +225,21 @@ export function FlujoTest({ pack, municipios, realizarTest, onSalir, onVerHistor
     }
 
     case "resultado":
+      if (entrevista) {
+        return (
+          <Pantalla
+            pie={
+              error && (
+                <BotonPrincipal onClick={() => void terminar(respuestas)}>{entrevista.textoReintentar}</BotonPrincipal>
+              )
+            }
+          >
+            <p className={error ? "rounded-xl bg-rojo-suave p-4 text-rojo" : "animate-pulse text-muted-foreground"}>
+              {error ? entrevista.textoError : entrevista.textoGuardando}
+            </p>
+          </Pantalla>
+        );
+      }
       return (
         <Pantalla
           pie={

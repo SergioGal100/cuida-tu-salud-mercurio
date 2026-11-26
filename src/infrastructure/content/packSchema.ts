@@ -127,6 +127,7 @@ export const packSchema = z.object({
     aviso: z.string(),
     queContarEnLaPosta: z.string(),
   }),
+  postaUi: z.record(z.string(), z.string()),
   posta: z.object({
     diferenciales: z.array(z.object({ sintoma: z.string(), otrasCausas: z.string() })),
     notaDiferencial: z.string(),

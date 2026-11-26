@@ -8,7 +8,7 @@ import { MAXIMO_LOTE } from "@/application/use-cases/servidor/RecibirLote";
  */
 const idRespuesta = z.string().regex(/^[A-Za-z0-9_-]{1,40}$/);
 
-const respuestasSchema = z
+export const respuestasSchema = z
   .object({
     contexto: z
       .object({

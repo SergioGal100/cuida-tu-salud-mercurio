@@ -149,6 +149,8 @@ export interface ContentPack {
     aviso: string;
     queContarEnLaPosta: string;
   };
+  /** Textos de la app de posta (clave → texto). */
+  postaUi: Record<string, string>;
   posta: {
     diferenciales: { sintoma: string; otrasCausas: string }[];
     notaDiferencial: string;
