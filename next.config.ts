@@ -1,7 +1,22 @@
+import { randomUUID } from "node:crypto";
+import withSerwistInit from "@serwist/next";
 import type { NextConfig } from "next";
+import pack from "./content/content_pack.json";
 
-const nextConfig: NextConfig = {
-  /* config options here */
-};
+// Cambia en cada despliegue para que el service worker baje la versión nueva.
+const revision = `${pack.version}-${process.env.VERCEL_GIT_COMMIT_SHA ?? randomUUID()}`;
 
-export default nextConfig;
+const withSerwist = withSerwistInit({
+  swSrc: "src/app/sw.ts",
+  swDest: "public/sw.js",
+  // El test y sus respaldos quedan en caché desde la primera visita.
+  additionalPrecacheEntries: ["/", "/test", "/sin-conexion"].map((url) => ({ url, revision })),
+  // Serwist no corre con next dev: probar con next build && next start.
+  disable: process.env.NODE_ENV === "development",
+  // No recargar al volver la señal: borraría un test a medio responder.
+  reloadOnOnline: false,
+});
+
+const nextConfig: NextConfig = {};
+
+export default withSerwist(nextConfig);

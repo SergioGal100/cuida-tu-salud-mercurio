@@ -31,7 +31,15 @@
     "nuevaPersona": "Nueva persona",
     "volverInicio": "Volver al inicio",
     "repetirTest": "Hacer el test otra vez",
-    "modoPromotor": "Modo promotor: este resultado no se guarda en el celular."
+    "modoPromotor": "Modo promotor: este resultado no se guarda en el celular.",
+    "sinConexionTitulo": "Estás sin internet",
+    "sinConexionMensaje": "Esta parte necesita señal. El test sí funciona sin internet.",
+    "historialTitulo": "Mis resultados",
+    "historialVacio": "Todavía no hiciste el test en este celular.",
+    "historialNota": "Tus resultados se guardan solo en este celular.",
+    "sintomasNuevos": "Nuevo desde la vez anterior:",
+    "pendientesEnvio": "Por enviar cuando haya señal: {n}",
+    "todoEnviado": "Todo enviado, sin nombre."
   },
 
   "confianza": {

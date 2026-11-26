@@ -20,7 +20,7 @@ export default function Inicio() {
           {app.botonTest}
         </Link>
         <Link
-          href="/test?vista=historial"
+          href="/test#historial"
           className="flex min-h-14 items-center justify-center rounded-xl border-2 border-primary px-6 text-xl font-bold text-primary"
         >
           {app.botonHistorial}

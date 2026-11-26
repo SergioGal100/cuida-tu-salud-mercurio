@@ -10,7 +10,9 @@ export type MuestraLaboratorio = "ORINA" | "SANGRE" | "CABELLO";
 export const TEXTOS_UI = [
   "atras", "seguir", "saltar", "prefieroNoDecir", "progreso", "tuResultado", "puntaje",
   "porQue", "queHacer", "muestraSugerida", "paraConversar", "dudasIntro", "alarmasTitulo",
-  "nuevaPersona", "volverInicio", "repetirTest", "modoPromotor",
+  "nuevaPersona", "volverInicio", "repetirTest", "modoPromotor", "sinConexionTitulo",
+  "sinConexionMensaje", "historialTitulo", "historialVacio", "historialNota", "sintomasNuevos",
+  "pendientesEnvio", "todoEnviado",
 ] as const;
 export type TextoUi = (typeof TEXTOS_UI)[number];
 
