@@ -1,0 +1,145 @@
+/**
+ * Forma de content/content_pack.json. Tipos puros: la validación en tiempo de
+ * ejecución vive en infrastructure/content/packSchema.ts.
+ */
+
+export type NivelId = "VERDE" | "AMARILLO" | "ROJO";
+export type MuestraSugeridaId = "ORINA" | "CABELLO_O_SANGRE" | "ORINA_Y_SANGRE";
+export type MuestraLaboratorio = "ORINA" | "SANGRE" | "CABELLO";
+
+export interface Opcion {
+  id: string;
+  texto: string;
+}
+
+export interface PreguntaContexto {
+  id: string;
+  pregunta: string;
+  opciones?: Opcion[];
+  opcional?: boolean;
+  fuente?: string;
+  permiteNoDecir?: boolean;
+}
+
+export interface OpcionExposicion extends Opcion {
+  puntos: number;
+  motivo?: string;
+}
+
+export interface GrupoExposicion {
+  id: string;
+  codigoMatriz: string;
+  seleccion: "unica";
+  icono: string | null;
+  pregunta: string;
+  opciones: OpcionExposicion[];
+  nota?: string;
+}
+
+export interface GrupoSintoma {
+  id: string;
+  codigoMatriz: string;
+  puntos: number;
+  icono: string | null;
+  pregunta: string;
+  etiqueta: string;
+}
+
+export interface EfectoRegla {
+  nivelMinimo?: NivelId;
+  urgente?: boolean;
+  subeSiMayor?: boolean;
+  siNormalYSintomasMarcados?: NivelId;
+}
+
+export interface Regla {
+  id: string;
+  prioridad: number;
+  activa: boolean;
+  origen: string;
+  condicion: string;
+  efecto: EfectoRegla;
+  motivo: string;
+}
+
+export interface RangoNivel {
+  id: NivelId;
+  min: number;
+  max: number;
+}
+
+export interface RangoLaboratorio {
+  muestra: MuestraLaboratorio;
+  unidad: string;
+  unidadTexto: string;
+  verdeHasta: number;
+  amarilloHasta: number;
+}
+
+export interface TextoResultado {
+  titulo: string;
+  mensaje: string;
+  acciones: string[];
+}
+
+export interface ContentPack {
+  version: string;
+  idioma: string;
+  tratamiento: string;
+  app: {
+    nombre: string;
+    nombreCorto: string;
+    descripcion: string;
+    botonTest: string;
+    botonHistorial: string;
+    enlacePosta: string;
+    avisoDatosPrueba: string;
+  };
+  confianza: { frases: string[]; boton: string };
+  contexto: PreguntaContexto[];
+  exposicion: { tope: number; grupos: GrupoExposicion[] };
+  alarmaAguda: {
+    id: string;
+    mostrarSi: { grupo: string; noEs: string[] };
+    pregunta: string;
+    opciones: Opcion[];
+    siEsSi: string;
+  };
+  sintomas: {
+    tope: number;
+    respuestas: Opcion[];
+    grupos: GrupoSintoma[];
+    gruposNeurologicos: string[];
+  };
+  niveles: RangoNivel[];
+  ordenNiveles: NivelId[];
+  definiciones: {
+    quemaSinProteccion: string[];
+    pescadoFrecuente: string[];
+    sintomasMarcados?: string;
+    exposicionVapor?: string;
+  };
+  reglas: Regla[];
+  muestraSugerida: {
+    soloExposicionVapor: MuestraSugeridaId | null;
+    soloPescadoFrecuente: MuestraSugeridaId | null;
+    ambas: MuestraSugeridaId | null;
+    ninguna: MuestraSugeridaId | null;
+    textos: Record<MuestraSugeridaId, string>;
+    mostrarDesdeNivel: NivelId;
+  };
+  laboratorio: {
+    vigenciaDias: number;
+    rangos: RangoLaboratorio[];
+    guiaMuestraOrina: string[];
+  };
+  resultado: Record<NivelId | "URGENTE", TextoResultado> & {
+    alarmasInmediatas: string[];
+    aviso: string;
+    queContarEnLaPosta: string;
+  };
+  posta: {
+    diferenciales: { sintoma: string; otrasCausas: string }[];
+    notaDiferencial: string;
+  };
+}

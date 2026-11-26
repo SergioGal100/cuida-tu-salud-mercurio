@@ -62,7 +62,7 @@ Confianza (3 frases) → quién responde → municipio → embarazo o lactancia 
 
 Offline en Next.js: todo el test vive en **una sola ruta `/test`** con `export const dynamic = "force-static"` y un componente de cliente. Los pasos son estado de React, no rutas. Sin Server Components con datos ni Server Actions en el test. JSON importados directo. `/test` y `/sin-conexion` van en `additionalPrecacheEntries` de Serwist. Probar con `next build && next start`, nunca con `next dev`. Modo promotor: no guarda historial.
 
-Prototipo previo (HTML/CSS/JS e ilustraciones SVG) en `prototipo/`: **reutilizar el CSS, los colores, las fuentes (alojarlas localmente) y los símbolos SVG** (`sym-*`, `work-art-*`). Quitar el script `data-pplx-inline-edit` y el crédito a Perplexity.
+No existe prototipo previo: la identidad visual se crea en el proyecto (tokens y clases en `src/app/globals.css`, fuente Atkinson Hyperlegible vía `next/font`, solo tema claro). Los símbolos SVG se crean con los ids que usa el pack (`sym-*`, `work-art-*`).
 
 ## Orden de trabajo
 

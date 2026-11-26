@@ -4,6 +4,16 @@
   "idioma": "es-BO",
   "tratamiento": "tu",
 
+  "app": {
+    "nombre": "Cuida tu salud: mercurio",
+    "nombreCorto": "Cuida tu salud",
+    "descripcion": "Un test corto para saber si conviene revisar tu salud por el contacto con mercurio. Funciona sin internet.",
+    "botonTest": "Hacer el test",
+    "botonHistorial": "Mis resultados",
+    "enlacePosta": "Soy personal de salud",
+    "avisoDatosPrueba": "Datos de prueba"
+  },
+
   "confianza": {
     "frases": [
       "Esto es para cuidar tu salud. No es control ni fiscalización.",

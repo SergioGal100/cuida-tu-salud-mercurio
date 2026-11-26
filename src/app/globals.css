@@ -1,0 +1,115 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/*
+ * Identidad visual "Cuida tu salud".
+ * Pensada para pantallas de celular al sol: fondo claro cálido, alto contraste,
+ * letra grande (Atkinson Hyperlegible, hecha para baja visión) y botones de
+ * al menos 56 px. Solo tema claro a propósito: se lee mejor en exteriores.
+ */
+
+@theme inline {
+  --font-sans: var(--font-atkinson), system-ui, sans-serif;
+  --font-heading: var(--font-atkinson), system-ui, sans-serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Semáforo del resultado */
+  --color-verde: var(--nivel-verde);
+  --color-verde-suave: var(--nivel-verde-suave);
+  --color-amarillo: var(--nivel-amarillo);
+  --color-amarillo-suave: var(--nivel-amarillo-suave);
+  --color-rojo: var(--nivel-rojo);
+  --color-rojo-suave: var(--nivel-rojo-suave);
+  --color-urgente: var(--nivel-urgente);
+  --color-urgente-suave: var(--nivel-urgente-suave);
+  --color-tierra: var(--tierra);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+}
+
+:root {
+  --radius: 0.875rem;
+
+  --background: #faf7f2;
+  --foreground: #1f2a2e;
+  --card: #ffffff;
+  --card-foreground: #1f2a2e;
+  --popover: #ffffff;
+  --popover-foreground: #1f2a2e;
+  --primary: #0f6e63;
+  --primary-foreground: #ffffff;
+  --secondary: #e7f1ee;
+  --secondary-foreground: #0b4f47;
+  --muted: #f0ebe3;
+  --muted-foreground: #5b6669;
+  --accent: #f3e6d3;
+  --accent-foreground: #6b4419;
+  --destructive: #b3261e;
+  --border: #e2dbd0;
+  --input: #d6cec2;
+  --ring: #0f6e63;
+  --tierra: #a0612a;
+
+  --nivel-verde: #1e7a3c;
+  --nivel-verde-suave: #e3f3e8;
+  --nivel-amarillo: #8a5a00; /* texto: el amarillo puro no se lee sobre blanco */
+  --nivel-amarillo-suave: #fff1c7;
+  --nivel-rojo: #b3261e;
+  --nivel-rojo-suave: #fde7e4;
+  --nivel-urgente: #ffffff;
+  --nivel-urgente-suave: #8c1d18;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-size: 1.125rem;
+    line-height: 1.5;
+  }
+}
+
+/* Botón grande de opción para el test (un toque por respuesta). */
+@layer components {
+  .opcion-test {
+    @apply flex min-h-14 w-full items-center gap-3 rounded-xl border-2 border-border bg-card px-4 py-3 text-left text-lg font-bold transition-colors;
+  }
+  .opcion-test:hover {
+    @apply border-primary/50;
+  }
+  .opcion-test[aria-pressed="true"] {
+    @apply border-primary bg-secondary;
+  }
+  .opcion-test:focus-visible {
+    @apply outline-3 outline-offset-2 outline-primary;
+  }
+}
