@@ -22,7 +22,7 @@ Plan completo (fuente de verdad del diseño): https://claude.ai/artifact/FTU4tU7
 ## Stack
 
 Next.js 15 (App Router) + TypeScript · Tailwind CSS + shadcn/ui · Serwist (`@serwist/next`) · Dexie · Zod · Auth.js v5 (credenciales + bcrypt) · Prisma + PostgreSQL · Vitest · Leaflet (solo si sobra tiempo).
-Demo: **Vercel + Neon**. Producción: `docker-compose` (postgres, app standalone, cron, Caddy). No usar certificado autofirmado.
+Demo: **Netlify + Neon** (Vercel quedó bloqueado por verificación de cuenta). URL: https://cuida-tu-salud-mercurio.netlify.app. Desplegar con `pnpm deploy:netlify` (build local); las migraciones van aparte con `pnpm db:migrate && pnpm db:seed` usando el `.env` de Neon. Producción: `docker-compose` (postgres, app standalone, cron, Caddy). No usar certificado autofirmado.
 
 ## Arquitectura limpia
 
@@ -66,12 +66,12 @@ No existe prototipo previo: la identidad visual se crea en el proyecto (tokens y
 
 ## Orden de trabajo
 
-**Bloque 1, imprescindible** (no empezar el bloque 2 hasta que esto funcione desplegado en Vercel y probado desde un celular real):
+**Bloque 1, imprescindible** (no empezar el bloque 2 hasta que esto funcione desplegado y probado desde un celular real):
 1. Esqueleto: create-next-app, shadcn/ui, capas, lint de dependencias, manifest, estilos del prototipo.
 2. Dominio `scoring` + Vitest contra `casos.json`.
 3. Test y resultado.
 4. Offline: Serwist + Dexie + bandeja de salida + historial.
-5. Prisma + Neon, `RecibirLote`, `POST /api/v1/evaluaciones/lote` (idempotente por id, recalcula con el mismo motor, marca `discrepancia`), catálogo. Desplegar en Vercel.
+5. Prisma + Neon, `RecibirLote`, `POST /api/v1/evaluaciones/lote` (idempotente por id, recalcula con el mismo motor, marca `discrepancia`), catálogo. Desplegar en Netlify.
 
 **Bloque 2, demo completa**: posta (login con usuario de prueba, entrevista reutilizando componentes del test, ficha, laboratorio con recálculo) · vigilancia (tabla por municipio, supresión < 5, botón recalcular alertas, aviso "Datos de prueba") · `prisma db seed` con ~300 evaluaciones simuladas.
 

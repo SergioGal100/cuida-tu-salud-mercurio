@@ -1,0 +1,11 @@
+{
+  "files.watcherExclude": {
+    "**/.next/**": true,
+    "**/.netlify/**": true,
+    "**/node_modules/**": true
+  },
+  "search.exclude": {
+    "**/.next": true,
+    "**/.netlify": true
+  }
+}

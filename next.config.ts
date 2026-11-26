@@ -17,6 +17,14 @@ const withSerwist = withSerwistInit({
   reloadOnOnline: false,
 });
 
-const nextConfig: NextConfig = {};
+const nextConfig: NextConfig = {
+  // Asegura que el motor de Prisma para Linux viaje dentro de las funciones del servidor.
+  outputFileTracingIncludes: {
+    "/api/**/*": [
+      "./node_modules/.prisma/client/libquery_engine-rhel-openssl-3.0.x.so.node",
+      "./node_modules/.prisma/client/schema.prisma",
+    ],
+  },
+};
 
 export default withSerwist(nextConfig);

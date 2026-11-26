@@ -5,3 +5,5 @@ allowBuilds:
   prisma: true
   sharp: true
   unrs-resolver: true
+# node_modules plano (sin symlinks): el plugin de Next.js de Netlify falla con symlinks en Windows.
+nodeLinker: hoisted

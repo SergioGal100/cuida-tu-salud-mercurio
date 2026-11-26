@@ -1,0 +1,16 @@
+# Despliegue de la demo en Netlify (Vercel quedó bloqueado por verificación de cuenta).
+# Se despliega con build local: `pnpm deploy:netlify`.
+# Las migraciones van aparte (`pnpm db:migrate && pnpm db:seed` con el .env de Neon):
+# en el build, Netlify oculta las variables secretas y Prisma no puede conectarse.
+[build]
+  command = "pnpm next build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# El service worker nunca se cachea en el navegador: así toma la versión nueva.
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
