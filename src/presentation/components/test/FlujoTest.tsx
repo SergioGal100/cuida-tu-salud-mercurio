@@ -1,0 +1,229 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import type { ContentPack } from "@/domain/contenido/ContentPack";
+import { MUNICIPIO_NO_DICE, type Municipio } from "@/domain/contenido/Municipio";
+import type { Evaluacion } from "@/domain/evaluacion/Evaluacion";
+import { pasosDelTest, type Paso } from "@/domain/evaluacion/flujo";
+import type { Respuestas, RespuestaSintoma } from "@/domain/scoring";
+import { BotonPrincipal, BotonSecundario, ListaOpciones, Pantalla, TituloPregunta } from "./piezas";
+import { Resultado } from "./Resultado";
+
+export interface PropsFlujoTest {
+  pack: ContentPack;
+  municipios: Municipio[];
+  /** Caso de uso RealizarTest, inyectado desde app/ vía composition. */
+  realizarTest: (respuestas: Respuestas) => Promise<Evaluacion>;
+  onSalir: () => void;
+  onVerHistorial?: () => void;
+}
+
+/** Todo el test en una sola ruta: los pasos son estado de React, no páginas. */
+export function FlujoTest({ pack, municipios, realizarTest, onSalir, onVerHistorial }: PropsFlujoTest) {
+  const [indice, setIndice] = useState(0);
+  const [respuestas, setRespuestas] = useState<Respuestas>({});
+  const [evaluacion, setEvaluacion] = useState<Evaluacion | null>(null);
+  const [error, setError] = useState(false);
+
+  // Cada paso empieza arriba (si no, la pantalla siguiente queda a media altura).
+  useEffect(() => window.scrollTo(0, 0), [indice]);
+
+  const pasos = useMemo(() => pasosDelTest(pack, respuestas), [pack, respuestas]);
+  const paso: Paso = pasos[Math.min(indice, pasos.length - 1)];
+  const ui = pack.ui;
+  const totalPreguntas = pasos.filter((p) => p.tipo !== "confianza" && p.tipo !== "resultado").length;
+  const esPromotor = respuestas.contexto?.quienResponde === "promotor";
+
+  async function terminar(finales: Respuestas) {
+    try {
+      setEvaluacion(await realizarTest(finales));
+    } catch {
+      setError(true);
+    }
+  }
+
+  /** Guarda la respuesta y avanza; si el siguiente paso es el resultado, evalúa. */
+  function responder(nuevas: Respuestas) {
+    setRespuestas(nuevas);
+    const siguientes = pasosDelTest(pack, nuevas);
+    const proximo = indice + 1;
+    setIndice(proximo);
+    if (siguientes[proximo]?.tipo === "resultado") void terminar(nuevas);
+  }
+
+  const conContexto = (id: string, valor: string | undefined) => ({
+    ...respuestas,
+    contexto: { ...respuestas.contexto, [id]: valor },
+  });
+
+  function reiniciar() {
+    setRespuestas({});
+    setEvaluacion(null);
+    setError(false);
+    setIndice(0);
+  }
+
+  const atras = indice > 0 && paso.tipo !== "resultado" ? () => setIndice(indice - 1) : undefined;
+  const progreso =
+    paso.tipo === "confianza" || paso.tipo === "resultado"
+      ? undefined
+      : {
+          actual: indice,
+          total: totalPreguntas,
+          texto: ui.progreso.replace("{actual}", String(indice)).replace("{total}", String(totalPreguntas)),
+        };
+
+  switch (paso.tipo) {
+    case "confianza":
+      return (
+        <Pantalla
+          pie={<BotonPrincipal onClick={() => setIndice(1)}>{pack.confianza.boton}</BotonPrincipal>}
+          textoAtras={ui.atras}
+          onAtras={onSalir}
+        >
+          <h1 className="text-3xl font-bold text-primary">{pack.app.nombreCorto}</h1>
+          <ul className="flex flex-col gap-3">
+            {pack.confianza.frases.map((f) => (
+              <li key={f} className="rounded-2xl bg-card p-4 text-xl leading-snug shadow-sm">
+                {f}
+              </li>
+            ))}
+          </ul>
+        </Pantalla>
+      );
+
+    case "municipio": {
+      const pregunta = pack.contexto.find((c) => c.fuente)!;
+      const opciones = [
+        ...municipios.map((m) => ({ id: m.codigo, texto: m.nombre })),
+        { id: MUNICIPIO_NO_DICE, texto: ui.prefieroNoDecir },
+      ];
+      return (
+        <Pantalla progreso={progreso} textoAtras={ui.atras} onAtras={atras}>
+          <TituloPregunta>{pregunta.pregunta}</TituloPregunta>
+          <ListaOpciones
+            opciones={opciones}
+            valor={respuestas.contexto?.[pregunta.id]}
+            onElegir={(v) => responder(conContexto(pregunta.id, v))}
+          />
+        </Pantalla>
+      );
+    }
+
+    case "contexto": {
+      const preguntas = paso.ids.map((id) => pack.contexto.find((c) => c.id === id)!);
+      // Una sola pregunta obligatoria: avanza con un toque.
+      if (preguntas.length === 1 && !preguntas[0].opcional) {
+        const p = preguntas[0];
+        return (
+          <Pantalla progreso={progreso} textoAtras={ui.atras} onAtras={atras}>
+            <TituloPregunta>{p.pregunta}</TituloPregunta>
+            <ListaOpciones
+              opciones={p.opciones ?? []}
+              valor={respuestas.contexto?.[p.id]}
+              onElegir={(v) => responder(conContexto(p.id, v))}
+            />
+          </Pantalla>
+        );
+      }
+      // Preguntas opcionales juntas: se eligen y se sigue (o se salta).
+      const algunaRespondida = preguntas.some((p) => respuestas.contexto?.[p.id]);
+      return (
+        <Pantalla
+          progreso={progreso}
+          textoAtras={ui.atras}
+          onAtras={atras}
+          pie={
+            <BotonPrincipal onClick={() => responder(respuestas)}>
+              {algunaRespondida ? ui.seguir : ui.saltar}
+            </BotonPrincipal>
+          }
+        >
+          {preguntas.map((p) => (
+            <section key={p.id} className="flex flex-col gap-3">
+              <h1 className="text-2xl font-bold">{p.pregunta}</h1>
+              <ListaOpciones
+                opciones={p.opciones ?? []}
+                valor={respuestas.contexto?.[p.id]}
+                onElegir={(v) =>
+                  setRespuestas(conContexto(p.id, respuestas.contexto?.[p.id] === v ? undefined : v))
+                }
+              />
+            </section>
+          ))}
+        </Pantalla>
+      );
+    }
+
+    case "exposicion": {
+      const grupo = pack.exposicion.grupos.find((g) => g.id === paso.grupoId)!;
+      const valor = (respuestas as Record<string, unknown>)[grupo.id] as string | undefined;
+      return (
+        <Pantalla progreso={progreso} textoAtras={ui.atras} onAtras={atras}>
+          <TituloPregunta icono={grupo.icono}>{grupo.pregunta}</TituloPregunta>
+          <ListaOpciones
+            opciones={grupo.opciones}
+            valor={valor}
+            onElegir={(v) => responder({ ...respuestas, [grupo.id]: v })}
+          />
+        </Pantalla>
+      );
+    }
+
+    case "alarmaAguda":
+      return (
+        <Pantalla progreso={progreso} textoAtras={ui.atras} onAtras={atras}>
+          <TituloPregunta>{pack.alarmaAguda.pregunta}</TituloPregunta>
+          <ListaOpciones
+            opciones={pack.alarmaAguda.opciones}
+            valor={respuestas.alarmaAguda}
+            onElegir={(v) => responder({ ...respuestas, alarmaAguda: v })}
+          />
+        </Pantalla>
+      );
+
+    case "sintoma": {
+      const grupo = pack.sintomas.grupos.find((g) => g.id === paso.grupoId)!;
+      return (
+        <Pantalla progreso={progreso} textoAtras={ui.atras} onAtras={atras}>
+          <TituloPregunta icono={grupo.icono}>{grupo.pregunta}</TituloPregunta>
+          <ListaOpciones
+            opciones={pack.sintomas.respuestas}
+            valor={respuestas.sintomas?.[grupo.id]}
+            onElegir={(v) =>
+              responder({
+                ...respuestas,
+                sintomas: { ...respuestas.sintomas, [grupo.id]: v as RespuestaSintoma },
+              })
+            }
+          />
+        </Pantalla>
+      );
+    }
+
+    case "resultado":
+      return (
+        <Pantalla
+          pie={
+            <>
+              {esPromotor ? (
+                <BotonPrincipal onClick={reiniciar}>{ui.nuevaPersona}</BotonPrincipal>
+              ) : (
+                onVerHistorial && <BotonPrincipal onClick={onVerHistorial}>{pack.app.botonHistorial}</BotonPrincipal>
+              )}
+              <BotonSecundario onClick={onSalir}>{ui.volverInicio}</BotonSecundario>
+            </>
+          }
+        >
+          {esPromotor && <p className="rounded-xl bg-accent p-3 text-accent-foreground">{ui.modoPromotor}</p>}
+          {evaluacion ? (
+            <Resultado evaluacion={evaluacion} pack={pack} />
+          ) : error ? (
+            <p className="rounded-xl bg-rojo-suave p-4 text-rojo">{pack.resultado.aviso}</p>
+          ) : (
+            <p className="animate-pulse text-muted-foreground">…</p>
+          )}
+        </Pantalla>
+      );
+  }
+}

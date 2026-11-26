@@ -7,6 +7,13 @@ export type NivelId = "VERDE" | "AMARILLO" | "ROJO";
 export type MuestraSugeridaId = "ORINA" | "CABELLO_O_SANGRE" | "ORINA_Y_SANGRE";
 export type MuestraLaboratorio = "ORINA" | "SANGRE" | "CABELLO";
 
+export const TEXTOS_UI = [
+  "atras", "seguir", "saltar", "prefieroNoDecir", "progreso", "tuResultado", "puntaje",
+  "porQue", "queHacer", "muestraSugerida", "paraConversar", "dudasIntro", "alarmasTitulo",
+  "nuevaPersona", "volverInicio", "repetirTest", "modoPromotor",
+] as const;
+export type TextoUi = (typeof TEXTOS_UI)[number];
+
 export interface Opcion {
   id: string;
   texto: string;
@@ -95,6 +102,8 @@ export interface ContentPack {
     enlacePosta: string;
     avisoDatosPrueba: string;
   };
+  /** Textos sueltos de la interfaz del test. */
+  ui: Record<TextoUi, string>;
   confianza: { frases: string[]; boton: string };
   contexto: PreguntaContexto[];
   exposicion: { tope: number; grupos: GrupoExposicion[] };

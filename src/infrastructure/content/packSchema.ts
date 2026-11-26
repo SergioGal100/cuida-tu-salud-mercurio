@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { ContentPack } from "@/domain/contenido/ContentPack";
+import { TEXTOS_UI, type ContentPack, type TextoUi } from "@/domain/contenido/ContentPack";
 
 const nivel = z.enum(["VERDE", "AMARILLO", "ROJO"]);
 const muestraSugerida = z.enum(["ORINA", "CABELLO_O_SANGRE", "ORINA_Y_SANGRE"]);
@@ -23,6 +23,7 @@ export const packSchema = z.object({
     enlacePosta: z.string(),
     avisoDatosPrueba: z.string(),
   }),
+  ui: z.object(Object.fromEntries(TEXTOS_UI.map((k) => [k, z.string()])) as Record<TextoUi, z.ZodString>),
   confianza: z.object({ frases: z.array(z.string()), boton: z.string() }),
   contexto: z.array(
     z.object({

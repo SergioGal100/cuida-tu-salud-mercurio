@@ -14,6 +14,26 @@
     "avisoDatosPrueba": "Datos de prueba"
   },
 
+  "ui": {
+    "atras": "Atrás",
+    "seguir": "Seguir",
+    "saltar": "Saltar",
+    "prefieroNoDecir": "Prefiero no decir",
+    "progreso": "Paso {actual} de {total}",
+    "tuResultado": "Tu resultado",
+    "puntaje": "Puntaje",
+    "porQue": "Por qué",
+    "queHacer": "Qué hacer",
+    "muestraSugerida": "Si te hacen un análisis",
+    "paraConversar": "Para conversar en la posta",
+    "dudasIntro": "Respondiste \"No sé\" en:",
+    "alarmasTitulo": "Busca ayuda de inmediato si aparece:",
+    "nuevaPersona": "Nueva persona",
+    "volverInicio": "Volver al inicio",
+    "repetirTest": "Hacer el test otra vez",
+    "modoPromotor": "Modo promotor: este resultado no se guarda en el celular."
+  },
+
   "confianza": {
     "frases": [
       "Esto es para cuidar tu salud. No es control ni fiscalización.",
@@ -127,7 +147,7 @@
         "id": "pescado",
         "codigoMatriz": "A4",
         "seleccion": "unica",
-        "icono": null,
+        "icono": "work-art-fish",
         "pregunta": "¿Cuántas veces por semana comes pescado de ríos de zonas mineras?",
         "opciones": [
           { "id": "mas_de_3_por_semana", "texto": "Más de 3 veces", "puntos": 5, "motivo": "Comes pescado de ríos de zonas mineras más de 3 veces por semana: el mercurio del río se acumula en los peces." },
