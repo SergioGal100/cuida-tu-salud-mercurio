@@ -4,6 +4,8 @@ App de tamizaje (no de diagnóstico) para mineros cooperativistas, pobladores de
 
 Plan completo (fuente de verdad del diseño): https://claude.ai/artifact/FTU4tU7TvDBhqhzs4BPxSV
 
+Documentación del código (specs y tutoriales): [docs/README.md](docs/README.md). Mantenerla al día al cerrar cada módulo; las decisiones nuevas van en `docs/specs/06-decisiones-y-pendientes.md`.
+
 ## Qué hace
 
 1. **App pública (sin internet)**: la persona responde un test de 12 a 14 toques, ve su nivel (VERDE / AMARILLO / ROJO, o URGENTE) con motivos y qué hacer, y guarda su historial en el celular. El test se envía **solo y sin nombre** cuando vuelve la señal.
