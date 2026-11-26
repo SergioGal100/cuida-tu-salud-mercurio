@@ -8,6 +8,10 @@ import { pasosDelTest, type Paso } from "@/domain/evaluacion/flujo";
 import type { Respuestas, RespuestaSintoma } from "@/domain/scoring";
 import { BotonPrincipal, BotonSecundario, ListaOpciones, Pantalla, TituloPregunta } from "./piezas";
 import { Resultado } from "./Resultado";
+import { Ilustracion } from "../ui/Ilustracion";
+
+/** Una ilustración por frase de confianza, en el orden del pack. */
+const ILUSTRACION_CONFIANZA = ["escudo", "sin-documento", "senal"];
 
 export interface PropsFlujoTest {
   pack: ContentPack;
@@ -44,7 +48,11 @@ export function FlujoTest({ pack, municipios, realizarTest, onSalir, onVerHistor
   const [error, setError] = useState(false);
 
   // Cada paso empieza arriba (si no, la pantalla siguiente queda a media altura).
-  useEffect(() => window.scrollTo(0, 0), [indice]);
+  // Llaves a propósito: en Chrome reciente scrollTo devuelve una promesa y React
+  // la tomaría como función de limpieza (rompía el test al pasar de paso).
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [indice]);
 
   const esEntrevista = entrevista !== undefined;
   const pasos = useMemo(() => visibles(pack, respuestas, esEntrevista), [pack, respuestas, esEntrevista]);
@@ -52,6 +60,7 @@ export function FlujoTest({ pack, municipios, realizarTest, onSalir, onVerHistor
   const ui = pack.ui;
   const totalPreguntas = pasos.filter((p) => p.tipo !== "confianza" && p.tipo !== "resultado").length;
   const esPromotor = respuestas.contexto?.quienResponde === "promotor";
+  const marca = pack.app.nombreCorto;
 
   async function terminar(finales: Respuestas) {
     setError(false);
@@ -104,10 +113,14 @@ export function FlujoTest({ pack, municipios, realizarTest, onSalir, onVerHistor
           textoAtras={ui.atras}
           onAtras={onSalir}
         >
-          <h1 className="text-3xl font-bold text-primary">{pack.app.nombreCorto}</h1>
+          <div className="hero -mx-4 -mt-5 flex flex-col items-center gap-2 rounded-b-[2rem] px-4 pt-4 pb-6">
+            <Ilustracion id="hero" className="size-40" />
+            <h1 className="text-center text-3xl font-bold">{pack.app.nombreCorto}</h1>
+          </div>
           <ul className="flex flex-col gap-3">
-            {pack.confianza.frases.map((f) => (
-              <li key={f} className="rounded-2xl bg-card p-4 text-xl leading-snug shadow-sm">
+            {pack.confianza.frases.map((f, i) => (
+              <li key={f} className="tarjeta flex items-center gap-4 p-4 text-lg leading-snug">
+                <Ilustracion id={ILUSTRACION_CONFIANZA[i % ILUSTRACION_CONFIANZA.length]} className="size-16 shrink-0" />
                 {f}
               </li>
             ))}
@@ -122,7 +135,7 @@ export function FlujoTest({ pack, municipios, realizarTest, onSalir, onVerHistor
         { id: MUNICIPIO_NO_DICE, texto: ui.prefieroNoDecir },
       ];
       return (
-        <Pantalla progreso={progreso} textoAtras={ui.atras} onAtras={atras}>
+        <Pantalla marca={marca} progreso={progreso} textoAtras={ui.atras} onAtras={atras}>
           <TituloPregunta>{pregunta.pregunta}</TituloPregunta>
           <ListaOpciones
             opciones={opciones}
@@ -139,7 +152,7 @@ export function FlujoTest({ pack, municipios, realizarTest, onSalir, onVerHistor
       if (preguntas.length === 1 && !preguntas[0].opcional) {
         const p = preguntas[0];
         return (
-          <Pantalla progreso={progreso} textoAtras={ui.atras} onAtras={atras}>
+          <Pantalla marca={marca} progreso={progreso} textoAtras={ui.atras} onAtras={atras}>
             <TituloPregunta>{p.pregunta}</TituloPregunta>
             <ListaOpciones
               opciones={p.opciones ?? []}
@@ -153,6 +166,7 @@ export function FlujoTest({ pack, municipios, realizarTest, onSalir, onVerHistor
       const algunaRespondida = preguntas.some((p) => respuestas.contexto?.[p.id]);
       return (
         <Pantalla
+          marca={marca}
           progreso={progreso}
           textoAtras={ui.atras}
           onAtras={atras}
@@ -182,7 +196,7 @@ export function FlujoTest({ pack, municipios, realizarTest, onSalir, onVerHistor
       const grupo = pack.exposicion.grupos.find((g) => g.id === paso.grupoId)!;
       const valor = (respuestas as Record<string, unknown>)[grupo.id] as string | undefined;
       return (
-        <Pantalla progreso={progreso} textoAtras={ui.atras} onAtras={atras}>
+        <Pantalla marca={marca} progreso={progreso} textoAtras={ui.atras} onAtras={atras}>
           <TituloPregunta icono={grupo.icono}>{grupo.pregunta}</TituloPregunta>
           <ListaOpciones
             opciones={grupo.opciones}
@@ -195,7 +209,7 @@ export function FlujoTest({ pack, municipios, realizarTest, onSalir, onVerHistor
 
     case "alarmaAguda":
       return (
-        <Pantalla progreso={progreso} textoAtras={ui.atras} onAtras={atras}>
+        <Pantalla marca={marca} progreso={progreso} textoAtras={ui.atras} onAtras={atras}>
           <TituloPregunta>{pack.alarmaAguda.pregunta}</TituloPregunta>
           <ListaOpciones
             opciones={pack.alarmaAguda.opciones}
@@ -208,7 +222,7 @@ export function FlujoTest({ pack, municipios, realizarTest, onSalir, onVerHistor
     case "sintoma": {
       const grupo = pack.sintomas.grupos.find((g) => g.id === paso.grupoId)!;
       return (
-        <Pantalla progreso={progreso} textoAtras={ui.atras} onAtras={atras}>
+        <Pantalla marca={marca} progreso={progreso} textoAtras={ui.atras} onAtras={atras}>
           <TituloPregunta icono={grupo.icono}>{grupo.pregunta}</TituloPregunta>
           <ListaOpciones
             opciones={pack.sintomas.respuestas}
@@ -242,6 +256,7 @@ export function FlujoTest({ pack, municipios, realizarTest, onSalir, onVerHistor
       }
       return (
         <Pantalla
+          marca={marca}
           pie={
             <>
               {esPromotor ? (
@@ -253,7 +268,7 @@ export function FlujoTest({ pack, municipios, realizarTest, onSalir, onVerHistor
             </>
           }
         >
-          {esPromotor && <p className="rounded-xl bg-accent p-3 text-accent-foreground">{ui.modoPromotor}</p>}
+          {esPromotor && <p className="rounded-2xl bg-accent p-3 text-accent-foreground">{ui.modoPromotor}</p>}
           {evaluacion ? (
             <Resultado evaluacion={evaluacion} pack={pack} />
           ) : error ? (
