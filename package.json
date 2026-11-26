@@ -13,7 +13,7 @@
     "db:seed": "prisma db seed",
     "db:migrate": "prisma migrate deploy",
     "postinstall": "prisma generate",
-    "deploy:netlify": "npx -y netlify-cli@latest deploy --prod"
+    "deploy:netlify": "bash scripts/deploy-netlify.sh"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
