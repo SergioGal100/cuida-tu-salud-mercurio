@@ -20,7 +20,7 @@ export default async function LayoutPosta({ children }: { children: React.ReactN
           </Link>
           <span className="rounded bg-amarillo-suave px-2 text-sm font-bold text-amarillo">{tx(t, "datosPrueba")}</span>
           {(personal.rol === "EPIDEMIOLOGO" || personal.rol === "ADMIN") && (
-            <Link href="/vigilancia" className="text-sm font-bold text-primary underline">
+            <Link href="/posta/vigilancia" className="text-sm font-bold text-primary underline">
               {tx(t, "vigilancia")}
             </Link>
           )}

@@ -7,6 +7,8 @@ import {
   ListarCasos,
   VerConsulta,
 } from "@/application/use-cases/servidor/Consultas";
+import { CalcularAlertas, ResumenVigilancia } from "@/application/use-cases/servidor/Vigilancia";
+import { VigilanciaRepositoryPrisma } from "@/infrastructure/prisma/VigilanciaRepositoryPrisma";
 import { contentPack, municipios } from "@/infrastructure/content/contenido";
 import { prisma } from "@/infrastructure/prisma/cliente";
 import { ConsultaRepositoryPrisma } from "@/infrastructure/prisma/ConsultaRepositoryPrisma";
@@ -40,3 +42,7 @@ export const guardarFicha = new GuardarFicha(consultas);
 export const cargarLaboratorio = new CargarLaboratorio({ pack: contentPack, repo: consultas, reloj });
 export const listarCasos = new ListarCasos(consultas);
 export const verConsulta = new VerConsulta(consultas);
+
+const depsVigilancia = { pack: contentPack, municipios, repo: new VigilanciaRepositoryPrisma(prisma), reloj };
+export const resumenVigilancia = new ResumenVigilancia(depsVigilancia);
+export const calcularAlertas = new CalcularAlertas(depsVigilancia);

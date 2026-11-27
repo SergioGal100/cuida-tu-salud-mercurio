@@ -133,6 +133,22 @@ export const packSchema = z.object({
     diferenciales: z.array(z.object({ sintoma: z.string(), otrasCausas: z.string() })),
     notaDiferencial: z.string(),
   }),
+  vigilancia: z.object({
+    supresionMinima: z.number().int().positive(),
+    semanasSerie: z.number().int().positive(),
+    periodosDias: z.array(z.number().int().positive()).min(1),
+    periodoPorDefecto: z.number().int().positive(),
+    alerta: z.object({
+      id: z.string(),
+      ventanaDias: z.number().int().positive(),
+      minimoRojos: z.number().int().positive(),
+      texto: z.string(),
+    }),
+    insignias: z.object({ altoDesde: z.number().int().nonnegative(), medioDesde: z.number().int().nonnegative() }),
+    etiquetasExposicion: z.record(z.string(), z.string()),
+    textos: z.record(z.string(), z.string()),
+    privacidad: z.array(z.string()),
+  }),
 });
 
 /** Valida el JSON del pack y lo devuelve con el tipo del dominio. Falla si no cumple. */

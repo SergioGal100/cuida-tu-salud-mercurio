@@ -1,7 +1,11 @@
-// Siembra catálogo, posta y usuarios de prueba. Idempotente. Uso: pnpm db:seed
+// Siembra catálogo, posta, usuarios de prueba y ~300 evaluaciones simuladas. Idempotente. Uso: pnpm db:seed
 import bcrypt from "bcryptjs";
 import { PrismaClient } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
+import packJson from "../content/content_pack.json";
 import municipiosJson from "../content/municipios.json";
+import type { ContentPack } from "../src/domain/contenido/ContentPack";
+import { generarSimulacion, VERSION_SIMULADA } from "./simulacion";
 
 const prisma = new PrismaClient();
 
@@ -29,6 +33,33 @@ async function main() {
   for (const u of usuarios) {
     await prisma.usuario.upsert({ where: { email: u.email }, create: { ...u, passwordHash }, update: { ...u, passwordHash, activo: true } });
   }
+  // Evaluaciones simuladas para la vigilancia: se rehacen en cada seed con fechas
+  // relativas a hoy (solo las simuladas sin consulta; nada real se toca).
+  const borradas = await prisma.evaluacion.deleteMany({ where: { versionPack: VERSION_SIMULADA, consulta: null } });
+  const simuladas = generarSimulacion(packJson as unknown as ContentPack, new Date());
+  await prisma.evaluacion.createMany({
+    data: simuladas.map((e) => ({
+      id: e.id,
+      origen: e.origen,
+      creadaEnDispositivo: e.creadaEn,
+      recibidaEn: e.creadaEn,
+      municipioCodigo: e.municipioCodigo,
+      rangoEdad: e.respuestas.contexto?.rangoEdad ?? null,
+      sexo: e.respuestas.contexto?.sexo ?? null,
+      embarazoLactancia: e.respuestas.contexto?.embarazoLactancia ?? null,
+      ninosEnCasa: e.respuestas.contexto?.ninosEnCasa ?? null,
+      respuestas: e.respuestas as Prisma.InputJsonValue,
+      puntaje: e.resultado.puntaje,
+      nivel: e.resultado.nivel,
+      urgente: e.resultado.urgente,
+      reglas: e.resultado.reglas,
+      resultado: e.resultado as unknown as Prisma.InputJsonValue,
+      versionPack: VERSION_SIMULADA,
+    })),
+    skipDuplicates: true,
+  });
+  console.log(`Evaluaciones simuladas: ${simuladas.length} (reemplazan ${borradas.count})`);
+
   console.log(`Municipios: ${municipiosJson.municipios.length} · usuarios de prueba: ${usuarios.length}`);
 }
 

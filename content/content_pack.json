@@ -394,5 +394,90 @@
       { "sintoma": "oral", "otrasCausas": "Gingivitis por higiene oral o infección." }
     ],
     "notaDiferencial": "No todo síntoma en un minero es mercurio: integrar exposición, examen y laboratorio."
+  },
+
+  "vigilancia": {
+    "supresionMinima": 5,
+    "semanasSerie": 12,
+    "periodosDias": [
+      7,
+      30,
+      90
+    ],
+    "periodoPorDefecto": 30,
+    "alerta": {
+      "id": "rojos_en_ventana",
+      "ventanaDias": 7,
+      "minimoRojos": 5,
+      "texto": "{n} tests en ROJO o URGENTE en los últimos {dias} días. Conviene reforzar la atención en la posta."
+    },
+    "insignias": {
+      "altoDesde": 15,
+      "medioDesde": 8
+    },
+    "etiquetasExposicion": {
+      "quema": "Estuvo cerca de la quema",
+      "manipulacion": "Tocó mercurio",
+      "tiempo": "Más de 6 meses cerca del mercurio",
+      "pescado": "Come pescado de río seguido"
+    },
+    "textos": {
+      "antetitulo": "Del test en el celular a la atención en la posta",
+      "titulo": "Panel de vigilancia",
+      "datosPrueba": "Demo con datos de prueba",
+      "avisoMaqueta": "Los números son de prueba. Cada punto es el centro de un municipio, no una persona. Nada de esto cuenta casos confirmados: solo tests que recomendaron ir a la posta.",
+      "periodo": "Periodo",
+      "ultimosDias": "Últimos {n} días",
+      "origen": "Origen",
+      "origenTodos": "Todos",
+      "origenAuto": "Autorreportado (celular)",
+      "origenPosta": "Verificado en la posta",
+      "aplicar": "Aplicar",
+      "mostrando": "Mostrando: {periodo} · {origen}",
+      "kpiTests": "Tests recibidos",
+      "kpiTestsNota": "en el periodo",
+      "kpiVisita": "Con visita recomendada",
+      "kpiVisitaNota": "{n} de {total} tests (Amarillo, Rojo o Urgente)",
+      "kpiAlerta": "Municipios en alerta",
+      "kpiAlertaNota": "de {total} municipios",
+      "enAlerta": "En alerta",
+      "kpiPosta": "Verificados en la posta",
+      "kpiPostaNota": "entrevistas hechas por personal de salud",
+      "mapaTitulo": "Mapa de calor por municipio",
+      "mapaNota": "Tests con visita recomendada (datos de prueba)",
+      "menos": "Menos",
+      "mas": "Más",
+      "suprimido": "menos de 5",
+      "municipiosTitulo": "Municipios por nivel",
+      "municipiosNota": "Tests con visita recomendada en el periodo",
+      "alto": "Alto",
+      "medio": "Medio",
+      "bajo": "Bajo",
+      "serieTitulo": "Tests por semana",
+      "serieNota": "Últimas 12 semanas, datos de prueba",
+      "sintomasTitulo": "Cambios más contados",
+      "exposicionesTitulo": "Exposiciones más contadas",
+      "conteoNota": "Respuestas «Sí» de quienes completaron el test",
+      "deTotal": "{n} de {total}",
+      "tablaTitulo": "Tabla por municipio y nivel",
+      "tablaNota": "Las celdas con menos de 5 tests se muestran como «<5» para que nadie pueda ser reconocido.",
+      "municipio": "Municipio",
+      "total": "Total",
+      "alertasTitulo": "Alertas abiertas",
+      "sinAlertas": "No hay alertas abiertas. Prueba con «Recalcular alertas».",
+      "recalcular": "Recalcular alertas",
+      "recalculando": "Recalculando…",
+      "recalculado": "Alertas recalculadas: {n} abiertas.",
+      "errorRecalcular": "No se pudo recalcular. Intenta de nuevo.",
+      "privacidadTitulo": "Cómo se protege a las personas",
+      "sinPermiso": "Solo el personal de epidemiología puede ver este panel."
+    },
+    "privacidad": [
+      "**Sin IP ni GPS.** La ubicación es el municipio que la persona elige, y puede decir «Prefiero no decir».",
+      "**Sin nombres ni datos personales.** Solo conteos por municipio.",
+      "**Mínimo de 5.** Si un municipio o una celda tiene menos de 5 tests, no se muestra el número.",
+      "**Sin etiquetas.** El panel no marca personas ni comunidades como «casos»: orienta dónde reforzar la atención.",
+      "**Decide el personal de salud.** Nada aquí diagnostica ni confirma una intoxicación."
+    ]
   }
 }

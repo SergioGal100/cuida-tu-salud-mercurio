@@ -153,8 +153,25 @@ export interface ContentPack {
   };
   /** Textos de la app de posta (clave → texto). */
   postaUi: Record<string, string>;
+  vigilancia: ConfigVigilancia;
   posta: {
     diferenciales: { sintoma: string; otrasCausas: string }[];
     notaDiferencial: string;
   };
+}
+
+/** Panel de vigilancia: supresión, regla de alerta, cortes y textos. */
+export interface ConfigVigilancia {
+  /** Celdas con menos de este número no muestran el conteo. */
+  supresionMinima: number;
+  semanasSerie: number;
+  periodosDias: number[];
+  periodoPorDefecto: number;
+  alerta: { id: string; ventanaDias: number; minimoRojos: number; texto: string };
+  /** Cortes de la insignia por tests con visita recomendada en el periodo. */
+  insignias: { altoDesde: number; medioDesde: number };
+  etiquetasExposicion: Record<string, string>;
+  textos: Record<string, string>;
+  /** Puntos del bloque "Cómo se protege a las personas" (admite **negrita**). */
+  privacidad: string[];
 }
