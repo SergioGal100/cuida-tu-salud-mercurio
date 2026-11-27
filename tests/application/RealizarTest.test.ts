@@ -30,6 +30,21 @@ describe("RealizarTest", () => {
     expect(Object.keys(ev).sort()).toEqual(["creadaEn", "id", "origen", "respuestas", "resultado", "versionPack"]);
   });
 
+  it("las actividades quedan en el historial y no cambian el nivel", async () => {
+    const respuestas = { contexto: { quienResponde: "yo" }, quema: "quema_cerrada_sin_retorta" };
+    const sin = await armar(["2026-11-26T10:00:00Z"]).uc.ejecutar(respuestas);
+    const { uc, historial } = armar(["2026-11-26T10:00:00Z"]);
+    const actividades = {
+      memoria: { correctas: 0, total: 3, maxLongitud: 0 },
+      reaccion: { medianaMs: 900, validos: 5, anticipaciones: 3 },
+      alternancia: null,
+      espiral: null,
+    };
+    const con = await uc.ejecutar(respuestas, actividades);
+    expect(con.resultado).toEqual(sin.resultado);
+    expect((await historial.listar())[0].actividades).toEqual(actividades);
+  });
+
   it("modo promotor: se envía pero no queda en el historial", async () => {
     const { uc, bandeja, historial } = armar(["2026-11-26T10:00:00Z"]);
     const ev = await uc.ejecutar({ contexto: { quienResponde: "promotor" } });

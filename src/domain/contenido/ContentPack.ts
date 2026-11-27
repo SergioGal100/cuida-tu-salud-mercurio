@@ -105,10 +105,17 @@ export interface ContentPack {
     avisoDatosPrueba: string;
     /** Tres textos cortos de la portada (gratis, sin nombre, sin internet). */
     beneficios: string[];
+    portada: {
+      tituloLinea1: string;
+      tituloLinea2: string;
+      subtitulo: string;
+      elige: string;
+      entradas: { id: PerfilEntrada; titulo: string; detalle: string | null }[];
+    };
   };
   /** Textos sueltos de la interfaz del test. */
   ui: Record<TextoUi, string>;
-  confianza: { frases: string[]; boton: string };
+  confianza: { frases: string[]; boton: string; bienvenida: Record<PerfilEntrada, string> };
   contexto: PreguntaContexto[];
   exposicion: { tope: number; grupos: GrupoExposicion[] };
   alarmaAguda: {
@@ -153,6 +160,7 @@ export interface ContentPack {
   };
   /** Textos de la app de posta (clave → texto). */
   postaUi: Record<string, string>;
+  actividades: ConfigActividades;
   vigilancia: ConfigVigilancia;
   posta: {
     diferenciales: { sintoma: string; otrasCausas: string }[];
@@ -174,4 +182,34 @@ export interface ConfigVigilancia {
   textos: Record<string, string>;
   /** Puntos del bloque "Cómo se protege a las personas" (admite **negrita**). */
   privacidad: string[];
+}
+
+/** Por dónde entra la persona desde la portada: cambia la bienvenida, no las preguntas. */
+export type PerfilEntrada = "mineria" | "comunidad";
+
+export type IdActividad = "memoria" | "reaccion" | "alternancia" | "espiral";
+
+/** Actividades experimentales del chequeo: no cambian el nivel. */
+export interface ConfigActividades {
+  titulo: string;
+  intro: string;
+  nota: string;
+  empezar: string;
+  saltarTodas: string;
+  saltar: string;
+  siguiente: string;
+  progreso: string;
+  resultadosTitulo: string;
+  omitida: string;
+  orden: IdActividad[];
+  memoria: Record<"titulo" | "instruccion" | "listo" | "repite" | "bien" | "noEsa" | "ronda" | "resultado", string> & {
+    longitudes: number[];
+  };
+  reaccion: Record<"titulo" | "instruccion" | "comenzar" | "espera" | "toca" | "muyPronto" | "intento" | "resultado", string> & {
+    intentos: number;
+    esperaMinMs: number;
+    esperaMaxMs: number;
+  };
+  alternancia: Record<"titulo" | "instruccion" | "comenzar" | "resultado", string> & { segundos: number };
+  espiral: Record<"titulo" | "instruccion" | "terminar" | "borrar" | "resultado", string> & { vueltas: number };
 }

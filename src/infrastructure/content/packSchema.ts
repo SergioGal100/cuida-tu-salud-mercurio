@@ -10,6 +10,10 @@ const textoResultado = z.object({
   acciones: z.array(z.string()),
 });
 
+/** Objeto de textos con claves fijas. */
+const textos = <K extends string>(claves: K[]) =>
+  z.object(Object.fromEntries(claves.map((k) => [k, z.string()])) as Record<K, z.ZodString>);
+
 export const packSchema = z.object({
   version: z.string(),
   idioma: z.string(),
@@ -23,9 +27,22 @@ export const packSchema = z.object({
     enlacePosta: z.string(),
     avisoDatosPrueba: z.string(),
     beneficios: z.array(z.string()),
+    portada: z.object({
+      tituloLinea1: z.string(),
+      tituloLinea2: z.string(),
+      subtitulo: z.string(),
+      elige: z.string(),
+      entradas: z.array(
+        z.object({ id: z.enum(["mineria", "comunidad"]), titulo: z.string(), detalle: z.string().nullable() }),
+      ),
+    }),
   }),
   ui: z.object(Object.fromEntries(TEXTOS_UI.map((k) => [k, z.string()])) as Record<TextoUi, z.ZodString>),
-  confianza: z.object({ frases: z.array(z.string()), boton: z.string() }),
+  confianza: z.object({
+    frases: z.array(z.string()),
+    boton: z.string(),
+    bienvenida: z.object({ mineria: z.string(), comunidad: z.string() }),
+  }),
   contexto: z.array(
     z.object({
       id: z.string(),
@@ -132,6 +149,29 @@ export const packSchema = z.object({
   posta: z.object({
     diferenciales: z.array(z.object({ sintoma: z.string(), otrasCausas: z.string() })),
     notaDiferencial: z.string(),
+  }),
+  actividades: z.object({
+    titulo: z.string(),
+    intro: z.string(),
+    nota: z.string(),
+    empezar: z.string(),
+    saltarTodas: z.string(),
+    saltar: z.string(),
+    siguiente: z.string(),
+    progreso: z.string(),
+    resultadosTitulo: z.string(),
+    omitida: z.string(),
+    orden: z.array(z.enum(["memoria", "reaccion", "alternancia", "espiral"])),
+    memoria: textos(["titulo", "instruccion", "listo", "repite", "bien", "noEsa", "ronda", "resultado"]).extend({
+      longitudes: z.array(z.number().int().min(2).max(9)).min(1),
+    }),
+    reaccion: textos(["titulo", "instruccion", "comenzar", "espera", "toca", "muyPronto", "intento", "resultado"]).extend({
+      intentos: z.number().int().positive(),
+      esperaMinMs: z.number().int().positive(),
+      esperaMaxMs: z.number().int().positive(),
+    }),
+    alternancia: textos(["titulo", "instruccion", "comenzar", "resultado"]).extend({ segundos: z.number().int().positive() }),
+    espiral: textos(["titulo", "instruccion", "terminar", "borrar", "resultado"]).extend({ vueltas: z.number().int().positive() }),
   }),
   vigilancia: z.object({
     supresionMinima: z.number().int().positive(),

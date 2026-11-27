@@ -63,3 +63,25 @@ Ilustraciones propias en `src/presentation/components/ui/Ilustracion.tsx`:
 Los pictogramas del pack (`Simbolo.tsx`) se dibujan en dos tonos: una copia rellena, corrida 2 px, detrás del trazo.
 
 Referencias recibidas: [PDF del spec y fotos del panel](../referencias/).
+
+## Actividades del chequeo
+
+Después de los síntomas, y antes del resultado, se ofrecen 4 actividades opcionales. Se pueden saltar todas o cada una por separado:
+
+| Actividad | Qué registra | Texto que ve la persona |
+|---|---|---|
+| Memoria visual (3 × 3) | Rondas de 3, 4 y 5 números (`actividades.memoria.longitudes`) | "Repetiste 2 de 3 secuencias. La más larga: 4 números." |
+| Tiempo de reacción | 5 intentos con espera al azar de 1,2 a 3,5 s; los toques antes de la señal cuentan como anticipaciones | Mediana en ms |
+| Desafío A/B | Toques alternados en 10 s y repetidos | "24 toques alternados en 10 segundos (1 con la misma letra seguida)." |
+| Espiral | Trazo con el dedo sobre una espiral de Arquímedes de 3 vueltas | Duración y distancia media a la línea (px del dibujo de 300 × 300) |
+
+**Reglas que se cumplen:**
+- No cambian el nivel. Hay una prueba que lo verifica: `tests/application/RealizarTest.test.ts`.
+- No dicen "normal" ni "anormal".
+- No se envían al servidor. Prueba: `tests/infrastructure/envioHttp.test.ts`.
+- Se guardan en `Evaluacion.actividades`, solo dentro de IndexedDB.
+
+**Código:**
+- Métricas puras: `src/domain/actividades/`.
+- Pantallas: `src/presentation/components/actividades/Actividades.tsx`.
+- Textos y parámetros: `actividades` en el pack.

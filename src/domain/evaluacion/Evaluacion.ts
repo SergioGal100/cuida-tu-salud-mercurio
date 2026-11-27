@@ -1,3 +1,4 @@
+import type { ResultadoActividades } from "../actividades/actividades";
 import type { Respuestas, ResultadoEvaluacion } from "../scoring/tipos";
 
 export type OrigenEvaluacion = "AUTO" | "PROMOTOR" | "POSTA";
@@ -15,6 +16,8 @@ export interface Evaluacion {
   versionPack: string;
   respuestas: Respuestas;
   resultado: ResultadoEvaluacion;
+  /** Actividades experimentales: solo en el historial del celular, nunca se envían. */
+  actividades?: ResultadoActividades;
 }
 
 /** "promotor" en quienResponde ⇒ PROMOTOR; si no, AUTO. */

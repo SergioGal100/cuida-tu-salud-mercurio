@@ -1,23 +1,34 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import type { ContentPack } from "@/domain/contenido/ContentPack";
+import type { ResultadoActividades } from "@/domain/actividades";
+import type { ContentPack, PerfilEntrada } from "@/domain/contenido/ContentPack";
 import { MUNICIPIO_NO_DICE, type Municipio } from "@/domain/contenido/Municipio";
 import type { Evaluacion } from "@/domain/evaluacion/Evaluacion";
 import { pasosDelTest, type Paso } from "@/domain/evaluacion/flujo";
 import type { Respuestas, RespuestaSintoma } from "@/domain/scoring";
 import { BotonPrincipal, BotonSecundario, ListaOpciones, Pantalla, TituloPregunta } from "./piezas";
 import { Resultado } from "./Resultado";
+import { ActividadesFlujo } from "../actividades/Actividades";
 import { Ilustracion } from "../ui/Ilustracion";
 
 /** Una ilustración por frase de confianza, en el orden del pack. */
 const ILUSTRACION_CONFIANZA = ["escudo", "sin-documento", "senal"];
 
+/** Ilustración de cada pregunta de contexto (por id del pack). */
+const ILUSTRACION_CONTEXTO: Record<string, string> = {
+  quienResponde: "personas",
+  embarazoLactancia: "familia",
+  ninosEnCasa: "nino",
+};
+
 export interface PropsFlujoTest {
   pack: ContentPack;
   municipios: Municipio[];
   /** Caso de uso RealizarTest, inyectado desde app/ vía composition. */
-  realizarTest: (respuestas: Respuestas) => Promise<Evaluacion>;
+  realizarTest: (respuestas: Respuestas, actividades?: ResultadoActividades) => Promise<Evaluacion>;
+  /** Entrada elegida en la portada: solo cambia la bienvenida. */
+  perfil?: PerfilEntrada;
   onSalir: () => void;
   onVerHistorial?: () => void;
   /**
@@ -41,8 +52,10 @@ function visibles(pack: ContentPack, r: Respuestas, entrevista: boolean): Paso[]
 }
 
 /** Todo el test en una sola ruta: los pasos son estado de React, no páginas. */
-export function FlujoTest({ pack, municipios, realizarTest, onSalir, onVerHistorial, entrevista }: PropsFlujoTest) {
+export function FlujoTest({ pack, municipios, realizarTest, onSalir, onVerHistorial, entrevista, perfil }: PropsFlujoTest) {
   const [indice, setIndice] = useState(0);
+  // Las actividades van entre los síntomas y el resultado (nunca en urgencias ni en la posta).
+  const [enActividades, setEnActividades] = useState(false);
   const [respuestas, setRespuestas] = useState<Respuestas>({});
   const [evaluacion, setEvaluacion] = useState<Evaluacion | null>(null);
   const [error, setError] = useState(false);
@@ -62,11 +75,11 @@ export function FlujoTest({ pack, municipios, realizarTest, onSalir, onVerHistor
   const esPromotor = respuestas.contexto?.quienResponde === "promotor";
   const marca = pack.app.nombreCorto;
 
-  async function terminar(finales: Respuestas) {
+  async function terminar(finales: Respuestas, actividades?: ResultadoActividades) {
     setError(false);
     try {
       if (entrevista) await entrevista.alTerminar(finales);
-      else setEvaluacion(await realizarTest(finales));
+      else setEvaluacion(await realizarTest(finales, actividades));
     } catch {
       setError(true);
     }
@@ -78,7 +91,10 @@ export function FlujoTest({ pack, municipios, realizarTest, onSalir, onVerHistor
     const siguientes = visibles(pack, nuevas, esEntrevista);
     const proximo = indice + 1;
     setIndice(proximo);
-    if (siguientes[proximo]?.tipo === "resultado") void terminar(nuevas);
+    if (siguientes[proximo]?.tipo !== "resultado") return;
+    const urgente = nuevas.alarmaAguda === "si";
+    if (!esEntrevista && !urgente) setEnActividades(true);
+    else void terminar(nuevas);
   }
 
   const conContexto = (id: string, valor: string | undefined) => ({
@@ -87,6 +103,7 @@ export function FlujoTest({ pack, municipios, realizarTest, onSalir, onVerHistor
   });
 
   function reiniciar() {
+    setEnActividades(false);
     setRespuestas({});
     setEvaluacion(null);
     setError(false);
@@ -105,6 +122,19 @@ export function FlujoTest({ pack, municipios, realizarTest, onSalir, onVerHistor
           texto: ui.progreso.replace("{actual}", String(numero)).replace("{total}", String(totalPreguntas)),
         };
 
+  if (enActividades) {
+    return (
+      <ActividadesFlujo
+        pack={pack}
+        marca={marca}
+        onTerminar={(actividades) => {
+          setEnActividades(false);
+          void terminar(respuestas, actividades);
+        }}
+      />
+    );
+  }
+
   switch (paso.tipo) {
     case "confianza":
       return (
@@ -114,8 +144,12 @@ export function FlujoTest({ pack, municipios, realizarTest, onSalir, onVerHistor
           onAtras={onSalir}
         >
           <div className="hero -mx-4 -mt-5 flex flex-col items-center gap-2 rounded-b-[2rem] px-4 pt-4 pb-6">
-            <Ilustracion id="hero" className="size-40" />
+            <Ilustracion
+              id={perfil === "comunidad" ? "comunidad" : perfil === "mineria" ? "minero" : "hero"}
+              className="size-40"
+            />
             <h1 className="text-center text-3xl font-bold">{pack.app.nombreCorto}</h1>
+            {perfil && <p className="text-center text-lg">{pack.confianza.bienvenida[perfil]}</p>}
           </div>
           <ul className="flex flex-col gap-3">
             {pack.confianza.frases.map((f, i) => (
@@ -136,7 +170,7 @@ export function FlujoTest({ pack, municipios, realizarTest, onSalir, onVerHistor
       ];
       return (
         <Pantalla marca={marca} progreso={progreso} textoAtras={ui.atras} onAtras={atras}>
-          <TituloPregunta>{pregunta.pregunta}</TituloPregunta>
+          <TituloPregunta ilustracion="ubicacion">{pregunta.pregunta}</TituloPregunta>
           <ListaOpciones
             opciones={opciones}
             valor={respuestas.contexto?.[pregunta.id]}
@@ -153,7 +187,7 @@ export function FlujoTest({ pack, municipios, realizarTest, onSalir, onVerHistor
         const p = preguntas[0];
         return (
           <Pantalla marca={marca} progreso={progreso} textoAtras={ui.atras} onAtras={atras}>
-            <TituloPregunta>{p.pregunta}</TituloPregunta>
+            <TituloPregunta ilustracion={ILUSTRACION_CONTEXTO[p.id]}>{p.pregunta}</TituloPregunta>
             <ListaOpciones
               opciones={p.opciones ?? []}
               valor={respuestas.contexto?.[p.id]}

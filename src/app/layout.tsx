@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Atkinson_Hyperlegible } from "next/font/google";
+import { Atkinson_Hyperlegible, Fraunces } from "next/font/google";
 import { contentPack } from "@/composition/contenido";
 import "./globals.css";
 
@@ -9,6 +9,14 @@ const atkinson = Atkinson_Hyperlegible({
   variable: "--font-atkinson",
   subsets: ["latin"],
   weight: ["400", "700"],
+  display: "swap",
+});
+
+// Solo para los títulos grandes de la portada.
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
+  subsets: ["latin"],
+  weight: ["700", "800"],
   display: "swap",
 });
 
@@ -29,7 +37,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es-BO" className={atkinson.variable}>
+    <html lang="es-BO" className={`${atkinson.variable} ${fraunces.variable}`}>
       <body className="antialiased">{children}</body>
     </html>
   );

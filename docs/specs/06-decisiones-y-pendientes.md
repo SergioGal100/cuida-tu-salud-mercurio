@@ -14,6 +14,10 @@ Registro de las decisiones tomadas al construir el prototipo, con su motivo. Si 
 | No se pregunta la comunidad, solo el municipio | Menos toques y más anonimato (CLAUDE.md pide solo municipio) |
 | Rediseño "menos plano" (26 nov): fondo crema, sombras, degradados e ilustraciones en dos tonos | La revisión pidió más volumen. Se siguió el anexo visual del PDF y las fotos del panel (en [referencias/](../referencias/)), pero se mantuvieron Atkinson Hyperlegible y el verde azulado |
 | El PDF "Mercurio Health Check" se usa solo como referencia visual | Propone mapa corporal, pruebas motoras, QR, comunidad y edad exacta: varias cosas chocan con las reglas del CLAUDE.md y no entran en el tiempo |
+| Portada "Del síntoma a la atención en la posta" (no "al diagnóstico") | Referencia `referencias/pantalla central.jpeg`; se cambió "diagnóstico" por la regla "No es diagnóstico" |
+| En los textos se dice "chequeo", no "test" | Pedido del equipo. La ruta sigue siendo `/test` (cambiarla rompería la caché sin internet) |
+| Dos entradas en la portada (minería / comunidad) | Abren el mismo chequeo (`/test#mineria`, `/test#comunidad`); solo cambia la bienvenida. Ningún puntaje cambia |
+| 4 actividades opcionales tras los síntomas: memoria, reacción, A/B y espiral | Para que no sean solo preguntas. Son experimentales: **no cambian el nivel**, se guardan solo en el historial del celular y **no se envían**. Se saltan en urgencias y en la entrevista de la posta |
 | Vigilancia sin porcentajes: "41 de 118" con una barra | Regla del proyecto "nunca porcentajes" |
 | Mapa de vigilancia esquemático en SVG (no Leaflet) | Funciona sin teselas ni internet, no sugiere ubicaciones exactas y los municipios son ficticios |
 | Insignia Alto/Medio/Bajo por conteo de tests con visita recomendada | Cortes en `vigilancia.insignias` del pack; no hay tendencia en % |

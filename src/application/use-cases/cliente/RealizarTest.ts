@@ -1,3 +1,4 @@
+import type { ResultadoActividades } from "@/domain/actividades";
 import type { ContentPack } from "@/domain/contenido/ContentPack";
 import { origenDesdeRespuestas, type Evaluacion } from "@/domain/evaluacion/Evaluacion";
 import { limpiarRespuestas } from "@/domain/evaluacion/flujo";
@@ -23,7 +24,7 @@ export interface DependenciasRealizarTest {
 export class RealizarTest {
   constructor(private readonly deps: DependenciasRealizarTest) {}
 
-  async ejecutar(respuestasCrudas: Respuestas): Promise<Evaluacion> {
+  async ejecutar(respuestasCrudas: Respuestas, actividades?: ResultadoActividades): Promise<Evaluacion> {
     const { pack, reloj, generadorId, bandeja, historial } = this.deps;
     const respuestas = limpiarRespuestas(pack, respuestasCrudas);
     const evaluacion: Evaluacion = {
@@ -33,6 +34,7 @@ export class RealizarTest {
       versionPack: pack.version,
       respuestas,
       resultado: evaluar(respuestas, pack),
+      ...(actividades ? { actividades } : {}),
     };
 
     await bandeja.agregar(evaluacion);

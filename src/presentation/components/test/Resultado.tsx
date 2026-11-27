@@ -3,6 +3,7 @@
 import type { ContentPack, NivelId } from "@/domain/contenido/ContentPack";
 import type { Evaluacion } from "@/domain/evaluacion/Evaluacion";
 import { cn } from "@/presentation/lib/utils";
+import { ResumenActividades } from "../actividades/Actividades";
 import { Ilustracion } from "../ui/Ilustracion";
 import { Simbolo } from "./Simbolo";
 
@@ -120,6 +121,8 @@ export function Resultado({ evaluacion, pack }: { evaluacion: Evaluacion; pack: 
           ))}
         </ol>
       </Seccion>
+
+      {evaluacion.actividades && <ResumenActividades actividades={evaluacion.actividades} cfg={pack.actividades} />}
 
       {mostrarMuestra && r.muestraSugerida && (
         <Seccion titulo={ui.muestraSugerida}>

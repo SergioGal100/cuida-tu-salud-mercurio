@@ -7,11 +7,21 @@
   "app": {
     "nombre": "Cuida tu salud: mercurio",
     "nombreCorto": "Cuida tu salud",
-    "descripcion": "Un test corto para saber si conviene revisar tu salud por el contacto con mercurio. Funciona sin internet.",
-    "botonTest": "Hacer el test",
+    "descripcion": "Un chequeo corto para saber si conviene revisar tu salud por el contacto con mercurio. Funciona sin internet.",
+    "botonTest": "Hacer mi chequeo",
     "botonHistorial": "Mis resultados",
     "enlacePosta": "Soy personal de salud",
     "avisoDatosPrueba": "Datos de prueba",
+    "portada": {
+      "tituloLinea1": "Del síntoma a la",
+      "tituloLinea2": "atención en la posta",
+      "subtitulo": "Reconoce situaciones de posible exposición al mercurio y prepárate para conversar en la posta.",
+      "elige": "Elige por dónde empezar",
+      "entradas": [
+        { "id": "mineria", "titulo": "Trabajo en minería", "detalle": null },
+        { "id": "comunidad", "titulo": "Soy de una comunidad o estoy de paso", "detalle": "Comunidades indígenas y otras comunidades" }
+      ]
+    },
     "beneficios": ["Gratis", "Sin nombre", "Funciona sin internet"]
   },
 
@@ -31,12 +41,12 @@
     "alarmasTitulo": "Busca ayuda de inmediato si aparece:",
     "nuevaPersona": "Nueva persona",
     "volverInicio": "Volver al inicio",
-    "repetirTest": "Hacer el test otra vez",
+    "repetirTest": "Hacer el chequeo otra vez",
     "modoPromotor": "Modo promotor: este resultado no se guarda en el celular.",
     "sinConexionTitulo": "Estás sin internet",
-    "sinConexionMensaje": "Esta parte necesita señal. El test sí funciona sin internet.",
+    "sinConexionMensaje": "Esta parte necesita señal. El chequeo sí funciona sin internet.",
     "historialTitulo": "Mis resultados",
-    "historialVacio": "Todavía no hiciste el test en este celular.",
+    "historialVacio": "Todavía no hiciste el chequeo en este celular.",
     "historialNota": "Tus resultados se guardan solo en este celular.",
     "sintomasNuevos": "Nuevo desde la vez anterior:",
     "pendientesEnvio": "Por enviar cuando haya señal: {n}",
@@ -52,7 +62,11 @@
       "No te pedimos nombre, carnet ni teléfono.",
       "Tus respuestas se envían sin nombre cuando haya señal, para mejorar la atención de salud en tu zona."
     ],
-    "boton": "Empezar"
+    "boton": "Empezar",
+    "bienvenida": {
+      "mineria": "Para quienes trabajan en la minería del oro: unas preguntas sobre tu trabajo y cómo te sientes.",
+      "comunidad": "Para quienes viven cerca de ríos o zonas mineras, o están de paso: unas preguntas sobre tu entorno y cómo te sientes."
+    }
   },
 
   "contexto": [
@@ -264,7 +278,7 @@
         "Usa retorta para recuperar el mercurio.",
         "Usa guantes y respirador con cartucho para vapor de mercurio. El barbijo común y la N95 no frenan el vapor.",
         "No lleves la ropa ni el calzado de trabajo a tu casa.",
-        "Repite este test cada cierto tiempo."
+        "Repite este chequeo cada cierto tiempo."
       ]
     },
     "AMARILLO": {
@@ -396,6 +410,59 @@
     "notaDiferencial": "No todo síntoma en un minero es mercurio: integrar exposición, examen y laboratorio."
   },
 
+  "actividades": {
+    "titulo": "Actividades rápidas",
+    "intro": "Cuatro juegos cortos de memoria, reacción y coordinación. Son opcionales y no cambian tu resultado.",
+    "nota": "Estas actividades son experimentales: muestran cómo te fue hoy. No miden el mercurio ni cambian tu nivel.",
+    "empezar": "Hacer las actividades",
+    "saltarTodas": "Saltar e ir a mi resultado",
+    "saltar": "Saltar esta actividad",
+    "siguiente": "Siguiente",
+    "progreso": "Actividad {actual} de {total}",
+    "resultadosTitulo": "Tus actividades de hoy",
+    "omitida": "No la hiciste",
+    "orden": ["memoria", "reaccion", "alternancia", "espiral"],
+    "memoria": {
+      "titulo": "Memoria visual",
+      "instruccion": "Mira el orden de los números. Cuando estés listo, toca «Ya memoricé» y repite el orden tocando las casillas.",
+      "listo": "Ya memoricé",
+      "repite": "Toca las casillas en el mismo orden",
+      "bien": "¡Bien hecho!",
+      "noEsa": "Ese no era el orden. Sigamos.",
+      "ronda": "Ronda {n} de {total}",
+      "longitudes": [3, 4, 5],
+      "resultado": "Repetiste {correctas} de {total} secuencias. La más larga: {max} números."
+    },
+    "reaccion": {
+      "titulo": "Tiempo de reacción",
+      "instruccion": "Toca el círculo apenas se ponga verde y diga «¡TOCA!». Espera la señal.",
+      "comenzar": "Comenzar",
+      "espera": "Espera…",
+      "toca": "¡TOCA!",
+      "muyPronto": "Muy pronto. Espera la señal.",
+      "intento": "Intento {n} de {total}",
+      "intentos": 5,
+      "esperaMinMs": 1200,
+      "esperaMaxMs": 3500,
+      "resultado": "Tu reacción: {ms} ms (lo típico de tus {n} intentos)."
+    },
+    "alternancia": {
+      "titulo": "Desafío de coordinación",
+      "instruccion": "Toca A y B alternando, lo más rápido que puedas. El tiempo empieza con tu primer toque.",
+      "comenzar": "Comenzar actividad",
+      "segundos": 10,
+      "resultado": "{toques} toques alternados en {s} segundos ({errores} con la misma letra seguida)."
+    },
+    "espiral": {
+      "titulo": "Sigue la espiral",
+      "instruccion": "Con un dedo, sigue la línea desde el centro hacia afuera sin levantarlo.",
+      "terminar": "Finalizar actividad",
+      "borrar": "Empezar de nuevo",
+      "vueltas": 3,
+      "resultado": "Tardaste {s} segundos. Distancia media a la línea: {d} px."
+    }
+  },
+
   "vigilancia": {
     "supresionMinima": 5,
     "semanasSerie": 12,
@@ -409,7 +476,7 @@
       "id": "rojos_en_ventana",
       "ventanaDias": 7,
       "minimoRojos": 5,
-      "texto": "{n} tests en ROJO o URGENTE en los últimos {dias} días. Conviene reforzar la atención en la posta."
+      "texto": "{n} chequeos en ROJO o URGENTE en los últimos {dias} días. Conviene reforzar la atención en la posta."
     },
     "insignias": {
       "altoDesde": 15,
@@ -422,10 +489,10 @@
       "pescado": "Come pescado de río seguido"
     },
     "textos": {
-      "antetitulo": "Del test en el celular a la atención en la posta",
+      "antetitulo": "Del chequeo en el celular a la atención en la posta",
       "titulo": "Panel de vigilancia",
       "datosPrueba": "Demo con datos de prueba",
-      "avisoMaqueta": "Los números son de prueba. Cada punto es el centro de un municipio, no una persona. Nada de esto cuenta casos confirmados: solo tests que recomendaron ir a la posta.",
+      "avisoMaqueta": "Los números son de prueba. Cada punto es el centro de un municipio, no una persona. Nada de esto cuenta casos confirmados: solo chequeos que recomendaron ir a la posta.",
       "periodo": "Periodo",
       "ultimosDias": "Últimos {n} días",
       "origen": "Origen",
@@ -434,33 +501,33 @@
       "origenPosta": "Verificado en la posta",
       "aplicar": "Aplicar",
       "mostrando": "Mostrando: {periodo} · {origen}",
-      "kpiTests": "Tests recibidos",
+      "kpiTests": "Chequeos recibidos",
       "kpiTestsNota": "en el periodo",
       "kpiVisita": "Con visita recomendada",
-      "kpiVisitaNota": "{n} de {total} tests (Amarillo, Rojo o Urgente)",
+      "kpiVisitaNota": "{n} de {total} chequeos (Amarillo, Rojo o Urgente)",
       "kpiAlerta": "Municipios en alerta",
       "kpiAlertaNota": "de {total} municipios",
       "enAlerta": "En alerta",
       "kpiPosta": "Verificados en la posta",
       "kpiPostaNota": "entrevistas hechas por personal de salud",
       "mapaTitulo": "Mapa de calor por municipio",
-      "mapaNota": "Tests con visita recomendada (datos de prueba)",
+      "mapaNota": "Chequeos con visita recomendada (datos de prueba)",
       "menos": "Menos",
       "mas": "Más",
       "suprimido": "menos de 5",
       "municipiosTitulo": "Municipios por nivel",
-      "municipiosNota": "Tests con visita recomendada en el periodo",
+      "municipiosNota": "Chequeos con visita recomendada en el periodo",
       "alto": "Alto",
       "medio": "Medio",
       "bajo": "Bajo",
-      "serieTitulo": "Tests por semana",
+      "serieTitulo": "Chequeos por semana",
       "serieNota": "Últimas 12 semanas, datos de prueba",
       "sintomasTitulo": "Cambios más contados",
       "exposicionesTitulo": "Exposiciones más contadas",
-      "conteoNota": "Respuestas «Sí» de quienes completaron el test",
+      "conteoNota": "Respuestas «Sí» de quienes completaron el chequeo",
       "deTotal": "{n} de {total}",
       "tablaTitulo": "Tabla por municipio y nivel",
-      "tablaNota": "Las celdas con menos de 5 tests se muestran como «<5» para que nadie pueda ser reconocido.",
+      "tablaNota": "Las celdas con menos de 5 chequeos se muestran como «<5» para que nadie pueda ser reconocido.",
       "municipio": "Municipio",
       "total": "Total",
       "alertasTitulo": "Alertas abiertas",
@@ -475,7 +542,7 @@
     "privacidad": [
       "**Sin IP ni GPS.** La ubicación es el municipio que la persona elige, y puede decir «Prefiero no decir».",
       "**Sin nombres ni datos personales.** Solo conteos por municipio.",
-      "**Mínimo de 5.** Si un municipio o una celda tiene menos de 5 tests, no se muestra el número.",
+      "**Mínimo de 5.** Si un municipio o una celda tiene menos de 5 chequeos, no se muestra el número.",
       "**Sin etiquetas.** El panel no marca personas ni comunidades como «casos»: orienta dónde reforzar la atención.",
       "**Decide el personal de salud.** Nada aquí diagnostica ni confirma una intoxicación."
     ]

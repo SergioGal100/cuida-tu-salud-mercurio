@@ -6,6 +6,9 @@ import { casosDeUsoCliente } from "@/composition/client";
 import { contentPack, municipios } from "@/composition/contenido";
 import { FlujoTest } from "@/presentation/components/test/FlujoTest";
 import { MisResultados } from "@/presentation/components/test/MisResultados";
+import type { PropsFlujoTest } from "@/presentation/components/test/FlujoTest";
+
+type PerfilEntrada = NonNullable<PropsFlujoTest["perfil"]>;
 import { useSincronizacion } from "@/presentation/hooks/useSincronizacion";
 
 type Vista = "test" | "historial";
@@ -15,6 +18,7 @@ export function TestCliente() {
   const router = useRouter();
   // Se usa #historial (no ?vista=) para que la ruta precacheada sirva sin internet.
   const [vista, setVista] = useState<Vista>("test");
+  const [perfil, setPerfil] = useState<PerfilEntrada | undefined>(undefined);
   const [intento, setIntento] = useState(0);
   const [pendientes, setPendientes] = useState<number | null>(null);
 
@@ -23,7 +27,12 @@ export function TestCliente() {
   const cargarHistorial = useCallback(() => casosDeUsoCliente().verHistorial.ejecutar(), []);
 
   useEffect(() => {
-    const leer = () => setVista(window.location.hash === "#historial" ? "historial" : "test");
+    const leer = () => {
+      const h = window.location.hash;
+      setVista(h === "#historial" ? "historial" : "test");
+      // #mineria / #comunidad: entrada elegida en la portada (solo cambia la bienvenida).
+      if (h === "#mineria" || h === "#comunidad") setPerfil(h.slice(1) as PerfilEntrada);
+    };
     leer();
     window.addEventListener("hashchange", leer);
     return () => window.removeEventListener("hashchange", leer);
@@ -59,8 +68,9 @@ export function TestCliente() {
       key={intento}
       pack={contentPack}
       municipios={municipios}
-      realizarTest={async (r) => {
-        const evaluacion = await casosDeUsoCliente().realizarTest.ejecutar(r);
+      perfil={perfil}
+      realizarTest={async (r, actividades) => {
+        const evaluacion = await casosDeUsoCliente().realizarTest.ejecutar(r, actividades);
         void sincronizarAhora(); // si hay señal, se va de inmediato
         return evaluacion;
       }}

@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import type { Opcion } from "@/domain/contenido/ContentPack";
 import { cn } from "@/presentation/lib/utils";
+import { Ilustracion } from "../ui/Ilustracion";
 import { Simbolo } from "./Simbolo";
 
 /** Pantalla base del test: marca, atrás y progreso arriba; contenido; pie con botones. */
@@ -52,9 +53,19 @@ export function Pantalla({
   );
 }
 
-export function TituloPregunta({ icono, children }: { icono?: string | null; children: ReactNode }) {
+export function TituloPregunta({
+  icono,
+  ilustracion,
+  children,
+}: {
+  icono?: string | null;
+  /** Ilustración grande (ids de Ilustracion) para preguntas sin pictograma del pack. */
+  ilustracion?: string;
+  children: ReactNode;
+}) {
   return (
     <div className="flex flex-col gap-5">
+      {!icono && ilustracion && <Ilustracion id={ilustracion} className="size-36 self-center drop-shadow-sm" />}
       {icono && (
         <div className="circulo-icono size-36 self-center">
           <Simbolo id={icono} className="size-20" />
