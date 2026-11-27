@@ -5,6 +5,7 @@ Todos los datos son de prueba.
 
 - App pública: https://cuida-tu-salud-mercurio.netlify.app
 - Posta: https://cuida-tu-salud-mercurio.netlify.app/posta (usuario `medico@demo.bo`, contraseña `demo1234`)
+- Vigilancia: https://cuida-tu-salud-mercurio.netlify.app/posta/vigilancia (usuario `epi@demo.bo`, contraseña `demo1234`)
 
 ## Por dónde empezar
 
@@ -27,6 +28,9 @@ Después, según lo que necesites tocar.
 | [04 · Servidor, base de datos y API](specs/04-servidor-y-api.md) | Prisma, tablas, endpoints, recepción de lotes, anonimato |
 | [05 · Posta](specs/05-posta.md) | Login, entrevista, ficha clínica, laboratorio, permisos |
 | [06 · Decisiones y pendientes](specs/06-decisiones-y-pendientes.md) | Registro de decisiones, riesgos conocidos y lo que falta |
+| [07 · Vigilancia y diseño visual](specs/07-vigilancia.md) | Panel por municipio, supresión < 5, alertas, seed simulado, identidad visual |
+
+Referencias de diseño recibidas (PDF del spec y fotos del panel): [referencias/](referencias/).
 
 ## Tutoriales (cómo hacer cosas)
 
@@ -42,12 +46,12 @@ Después, según lo que necesites tocar.
 
 ```bash
 pnpm install          # instalar dependencias
-pnpm test             # 57 pruebas (motor, casos de uso, base local, DTO)
+pnpm test             # 68 pruebas (motor, casos de uso, vigilancia, base local, DTO)
 pnpm lint             # incluye el lint de capas: falla si una capa importa a otra prohibida
 pnpm typecheck        # tipos de TypeScript
 pnpm build            # build de producción
 pnpm start            # sirve el build (para probar offline: nunca con pnpm dev)
 pnpm db:migrate       # aplica migraciones a la base del .env
-pnpm db:seed          # municipios, posta y usuarios de prueba
+pnpm db:seed          # municipios, posta, usuarios de prueba y ~300 evaluaciones simuladas
 pnpm deploy:netlify   # publica en Netlify
 ```

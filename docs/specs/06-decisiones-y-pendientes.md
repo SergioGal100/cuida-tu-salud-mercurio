@@ -12,6 +12,11 @@ Registro de las decisiones tomadas al construir el prototipo, con su motivo. Si 
 | `pescado` usa el ícono `work-art-fish` (antes `null`) | Para que todas las preguntas tengan pictograma |
 | Edad y sexo en una sola pantalla con "Saltar" | Son opcionales; menos toques |
 | No se pregunta la comunidad, solo el municipio | Menos toques y más anonimato (CLAUDE.md pide solo municipio) |
+| Rediseño "menos plano" (26 nov): fondo crema, sombras, degradados e ilustraciones en dos tonos | La revisión pidió más volumen. Se siguió el anexo visual del PDF y las fotos del panel (en [referencias/](../referencias/)), pero se mantuvieron Atkinson Hyperlegible y el verde azulado |
+| El PDF "Mercurio Health Check" se usa solo como referencia visual | Propone mapa corporal, pruebas motoras, QR, comunidad y edad exacta: varias cosas chocan con las reglas del CLAUDE.md y no entran en el tiempo |
+| Vigilancia sin porcentajes: "41 de 118" con una barra | Regla del proyecto "nunca porcentajes" |
+| Mapa de vigilancia esquemático en SVG (no Leaflet) | Funciona sin teselas ni internet, no sugiere ubicaciones exactas y los municipios son ficticios |
+| Insignia Alto/Medio/Bajo por conteo de tests con visita recomendada | Cortes en `vigilancia.insignias` del pack; no hay tendencia en % |
 | La muestra sugerida se calcula siempre | El caso 07 de `casos.json` lo exige; la pantalla decide si mostrarla |
 
 ## Decisiones técnicas
@@ -32,6 +37,10 @@ Registro de las decisiones tomadas al construir el prototipo, con su motivo. Si 
 | Botón de login siempre habilitado | Tras un error de Auth.js, `isPending` de React quedaba trabado y no se podía reintentar |
 | Netlify en vez de Vercel | Vercel bloqueó la cuenta por verificación ([tutorial de despliegue](../tutoriales/05-despliegue-desde-cero.md)) |
 | Base `neondb` (la que trae Neon por defecto) | Es la base de la cadena de conexión entregada |
+| Llaves en `useEffect(() => { window.scrollTo(0, 0); })` | En Chrome reciente `scrollTo` devuelve una promesa; sin llaves React la tomaba como limpieza y el test se caía al pasar de paso (arreglado el 26 nov, también en producción) |
+| Fecha de toma por defecto en hora local | `toISOString()` daba "mañana" después de las 20:00 en Bolivia |
+| Vigilancia dentro de `/posta/vigilancia` | Reutiliza la sesión y la barra de la posta; solo roles EPIDEMIOLOGO y ADMIN |
+| Evaluaciones simuladas con `version_pack = "simulacion-demo"` | El seed las borra y las rehace con fechas relativas a hoy; nunca toca las reales ni las que tienen consulta |
 
 ## Riesgos conocidos
 
@@ -43,9 +52,9 @@ Registro de las decisiones tomadas al construir el prototipo, con su motivo. Si 
 
 ## Pendiente (Bloque 2 y 3)
 
-- [ ] Vigilancia: tabla por municipio y nivel con supresión de celdas menores a 5, y autorreportados aparte de verificados.
-- [ ] Botón "Recalcular alertas" y lista de alertas.
-- [ ] Seed de unas 300 evaluaciones simuladas y una alerta lista para aparecer.
+- [x] Vigilancia: tabla por municipio y nivel con supresión de celdas menores a 5, y autorreportados aparte de verificados.
+- [x] Botón "Recalcular alertas" y lista de alertas.
+- [x] Seed de unas 300 evaluaciones simuladas y una alerta lista para aparecer (Río Dorado).
 - [ ] Límite de envíos por IP en `POST /evaluaciones/lote` (sin guardar la IP).
 - [ ] Bloque 3: mapa Leaflet, tarea programada de alertas, probar `docker-compose`.
 - [ ] Decidir "tú" o "vos".
