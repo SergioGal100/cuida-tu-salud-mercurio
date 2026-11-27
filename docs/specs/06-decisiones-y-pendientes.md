@@ -45,6 +45,8 @@ Registro de las decisiones tomadas al construir el prototipo, con su motivo. Si 
 | Fecha de toma por defecto en hora local | `toISOString()` daba "mañana" después de las 20:00 en Bolivia |
 | Vigilancia dentro de `/posta/vigilancia` | Reutiliza la sesión y la barra de la posta; solo roles EPIDEMIOLOGO y ADMIN |
 | Evaluaciones simuladas con `version_pack = "simulacion-demo"` | El seed las borra y las rehace con fechas relativas a hoy; nunca toca las reales ni las que tienen consulta |
+| Mapa de Bolivia en SVG propio, no Leaflet | Límites reales de GeoBolivia (dominio público) embebidos (16 KB): sin teselas externas, funciona sin internet y sin cuentas. Para regenerarlo: `node scripts/generar-mapa-bolivia.mjs <geojson>` |
+| Municipios reales con datos ficticios | Pedido para la demo. Se conservan los códigos internos `DEMO-01..11` para no romper evaluaciones y consultas ya guardadas |
 
 ## Riesgos conocidos
 
@@ -58,7 +60,7 @@ Registro de las decisiones tomadas al construir el prototipo, con su motivo. Si 
 
 - [x] Vigilancia: tabla por municipio y nivel con supresión de celdas menores a 5, y autorreportados aparte de verificados.
 - [x] Botón "Recalcular alertas" y lista de alertas.
-- [x] Seed de unas 300 evaluaciones simuladas y una alerta lista para aparecer (Río Dorado).
+- [x] Seed de unas 300 evaluaciones simuladas y una alerta lista para aparecer (Guanay).
 - [ ] Límite de envíos por IP en `POST /evaluaciones/lote` (sin guardar la IP).
 - [ ] Bloque 3: mapa Leaflet, tarea programada de alertas, probar `docker-compose`.
 - [ ] Decidir "tú" o "vos".

@@ -1,31 +1,61 @@
 {
-  "version": "1.0.0-demo",
-  "nota": "DATOS DE PRUEBA. Municipios y comunidades ficticios para la demo. Para usar zonas reales se reemplaza solo este archivo.",
+  "version": "1.1.0-demo",
+  "nota": "Municipios reales de Bolivia con DATOS FICTICIOS para la demo. Los centros son aproximados (la plaza principal) y no ubican a nadie. Los códigos DEMO-xx son internos; para datos reales se reemplaza solo este archivo (y se usarían los códigos del INE).",
   "municipios": [
     {
-      "codigo": "DEMO-01", "nombre": "Río Dorado (prueba)", "departamento": "Departamento de prueba",
-      "latCentro": -15.60, "lonCentro": -67.90,
-      "comunidades": ["Puerto Arena", "Las Balsas", "Villa Esperanza"]
+      "codigo": "DEMO-01", "nombre": "Guanay", "departamento": "La Paz",
+      "latCentro": -15.50, "lonCentro": -67.88,
+      "comunidades": []
     },
     {
-      "codigo": "DEMO-02", "nombre": "Cerro Verde (prueba)", "departamento": "Departamento de prueba",
-      "latCentro": -15.85, "lonCentro": -68.05,
-      "comunidades": ["Alto Mina", "San Pedro de la Quebrada", "Pampa Chica"]
+      "codigo": "DEMO-02", "nombre": "Sorata", "departamento": "La Paz",
+      "latCentro": -15.77, "lonCentro": -68.65,
+      "comunidades": []
     },
     {
-      "codigo": "DEMO-03", "nombre": "Tres Ríos (prueba)", "departamento": "Departamento de prueba",
-      "latCentro": -14.90, "lonCentro": -67.55,
-      "comunidades": ["Playa Ancha", "Isla Grande", "Puerto Nuevo"]
+      "codigo": "DEMO-03", "nombre": "Apolo", "departamento": "La Paz",
+      "latCentro": -14.72, "lonCentro": -68.42,
+      "comunidades": []
     },
     {
-      "codigo": "DEMO-04", "nombre": "Valle Escondido (prueba)", "departamento": "Departamento de prueba",
-      "latCentro": -16.10, "lonCentro": -67.70,
-      "comunidades": ["Santa Rosa del Valle", "Los Pinos"]
+      "codigo": "DEMO-04", "nombre": "Rurrenabaque", "departamento": "Beni",
+      "latCentro": -14.44, "lonCentro": -67.53,
+      "comunidades": []
     },
     {
-      "codigo": "DEMO-05", "nombre": "Bajío del Sol (prueba)", "departamento": "Departamento de prueba",
-      "latCentro": -14.60, "lonCentro": -66.95,
-      "comunidades": ["Pescadores Unidos", "Remanso", "Bella Vista del Río"]
+      "codigo": "DEMO-05", "nombre": "Trinidad", "departamento": "Beni",
+      "latCentro": -14.83, "lonCentro": -64.90,
+      "comunidades": []
+    },
+    {
+      "codigo": "DEMO-06", "nombre": "Riberalta", "departamento": "Beni",
+      "latCentro": -11.01, "lonCentro": -66.07,
+      "comunidades": []
+    },
+    {
+      "codigo": "DEMO-07", "nombre": "Cobija", "departamento": "Pando",
+      "latCentro": -11.03, "lonCentro": -68.75,
+      "comunidades": []
+    },
+    {
+      "codigo": "DEMO-08", "nombre": "San Ramón", "departamento": "Santa Cruz",
+      "latCentro": -16.60, "lonCentro": -62.70,
+      "comunidades": []
+    },
+    {
+      "codigo": "DEMO-09", "nombre": "San Ignacio de Velasco", "departamento": "Santa Cruz",
+      "latCentro": -16.37, "lonCentro": -60.96,
+      "comunidades": []
+    },
+    {
+      "codigo": "DEMO-10", "nombre": "Oruro", "departamento": "Oruro",
+      "latCentro": -17.97, "lonCentro": -67.11,
+      "comunidades": []
+    },
+    {
+      "codigo": "DEMO-11", "nombre": "Potosí", "departamento": "Potosí",
+      "latCentro": -19.58, "lonCentro": -65.75,
+      "comunidades": []
     }
   ]
 }

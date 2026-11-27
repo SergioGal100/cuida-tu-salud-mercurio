@@ -16,6 +16,7 @@ export interface FilaVigilancia {
 export interface MunicipioRef {
   codigo: string;
   nombre: string;
+  departamento?: string;
   latCentro: number;
   lonCentro: number;
 }
@@ -32,6 +33,7 @@ export type Conteo = number | null;
 export interface FilaMunicipio {
   codigo: string;
   nombre: string;
+  departamento?: string;
   latCentro: number;
   lonCentro: number;
   total: Conteo;
@@ -60,7 +62,7 @@ export interface ResumenVigilancia {
   };
   municipios: FilaMunicipio[];
   /** Fila aparte para "Prefiero no decir" (no va al mapa). */
-  sinMunicipio: Omit<FilaMunicipio, "latCentro" | "lonCentro" | "insignia" | "enAlerta">;
+  sinMunicipio: Omit<FilaMunicipio, "departamento" | "latCentro" | "lonCentro" | "insignia" | "enAlerta">;
   serieSemanal: { inicio: string; conteo: number }[];
   sintomas: ConteoRespuesta[];
   exposiciones: ConteoRespuesta[];
@@ -135,6 +137,7 @@ export function resumirVigilancia(
     return {
       codigo: m.codigo,
       nombre: m.nombre,
+      departamento: m.departamento,
       latCentro: m.latCentro,
       lonCentro: m.lonCentro,
       total: r.total,

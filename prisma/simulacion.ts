@@ -35,16 +35,27 @@ function uuidDeterminista(n: number) {
 
 type Perfil = "minero_quema" | "minero" | "ribereno" | "poblador";
 
-/** Peso de cada municipio y perfil típico (DEMO-05 queda con menos de 5: se ve la supresión). */
+/**
+ * Peso de cada municipio y perfil típico (DATOS FICTICIOS sobre municipios reales).
+ * Norte de La Paz: minería aurífera con quema. Amazonía (Beni, Pando): ribereños que
+ * comen pescado. Chiquitanía: minería más reciente. Altiplano: pocos chequeos.
+ * DEMO-05 (Trinidad) queda con menos de 5: se ve la supresión.
+ */
 const REPARTO: { codigo: string | null; peso: number; perfiles: Perfil[] }[] = [
-  { codigo: "DEMO-01", peso: 38, perfiles: ["minero_quema", "minero_quema", "minero", "ribereno"] },
-  { codigo: "DEMO-02", peso: 26, perfiles: ["minero", "minero_quema", "poblador"] },
-  { codigo: "DEMO-03", peso: 18, perfiles: ["ribereno", "ribereno", "poblador"] },
-  { codigo: "DEMO-04", peso: 13, perfiles: ["poblador", "poblador", "minero"] },
-  { codigo: null, peso: 5, perfiles: ["poblador", "minero"] },
+  { codigo: "DEMO-01", peso: 24, perfiles: ["minero_quema", "minero_quema", "minero", "ribereno"] }, // Guanay
+  { codigo: "DEMO-02", peso: 11, perfiles: ["minero", "minero_quema", "poblador"] }, // Sorata
+  { codigo: "DEMO-03", peso: 8, perfiles: ["minero", "ribereno", "poblador"] }, // Apolo
+  { codigo: "DEMO-04", peso: 11, perfiles: ["ribereno", "ribereno", "poblador"] }, // Rurrenabaque
+  { codigo: "DEMO-06", peso: 14, perfiles: ["ribereno", "ribereno", "minero", "poblador"] }, // Riberalta
+  { codigo: "DEMO-07", peso: 6, perfiles: ["ribereno", "poblador"] }, // Cobija
+  { codigo: "DEMO-08", peso: 9, perfiles: ["minero", "minero_quema", "poblador"] }, // San Ramón
+  { codigo: "DEMO-09", peso: 6, perfiles: ["minero", "poblador"] }, // San Ignacio de Velasco
+  { codigo: "DEMO-10", peso: 4, perfiles: ["poblador", "minero"] }, // Oruro
+  { codigo: "DEMO-11", peso: 3, perfiles: ["minero", "poblador"] }, // Potosí
+  { codigo: null, peso: 4, perfiles: ["poblador", "minero"] },
 ];
 
-export function generarSimulacion(pack: ContentPack, hoy: Date, total = 300): EvaluacionSimulada[] {
+export function generarSimulacion(pack: ContentPack, hoy: Date, total = 340): EvaluacionSimulada[] {
   const r = prng(20261126);
   const elegir = <T,>(xs: T[]) => xs[Math.floor(r() * xs.length)];
   const conProb = <T,>(p: number, si: T, no: T) => (r() < p ? si : no);
@@ -109,7 +120,7 @@ export function generarSimulacion(pack: ContentPack, hoy: Date, total = 300): Ev
     const diasAtras = Math.floor(Math.pow(r(), 1.35) * 84);
     agregar(zona.codigo, elegir(zona.perfiles), diasAtras);
   }
-  // DEMO-05: solo 3 tests (por debajo del mínimo de 5, el panel los suprime).
-  for (let i = 0; i < 3; i++) agregar("DEMO-05", "ribereno", 2 + i * 6);
+  // DEMO-05 (Trinidad): solo 2 tests (por debajo del mínimo de 5, el panel los suprime).
+  for (let i = 0; i < 2; i++) agregar("DEMO-05", "ribereno", 2 + i * 6);
   return salida;
 }

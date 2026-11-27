@@ -10,7 +10,7 @@ Ruta: `/posta/vigilancia`. Solo para los roles **EPIDEMIOLOGO** y **ADMIN** (usu
 |---|---|
 | Filtros (GET) | Periodo (7, 30 o 90 días; `vigilancia.periodosDias`) y origen: todos, autorreportado (celular o promotor) o verificado en la posta |
 | KPIs | Tests recibidos, con visita recomendada (Amarillo, Rojo o Urgente), municipios en alerta, verificados en la posta |
-| Mapa de calor | SVG esquemático: cada municipio es un punto en su `latCentro/lonCentro`, con un halo según los tests con visita recomendada. Los suprimidos se ven como un círculo punteado con "menos de 5" |
+| Mapa de Bolivia | SVG con los 9 departamentos reales (geoBoundaries BOL ADM1, fuente GeoBolivia, dominio público), simplificados en `boliviaGeo.ts` por `scripts/generar-mapa-bolivia.mjs`. Cada municipio es un punto en su `latCentro/lonCentro` con un halo según los chequeos con visita recomendada (recortado al territorio). En alerta: punto rojo. Suprimidos: círculo punteado. Al pasar el mouse o tocar, el detalle (`mapaDetalle` del pack). Sin teselas ni Leaflet: funciona sin internet |
 | Municipios por nivel | Conteo con visita recomendada e insignia Alto / Medio / Bajo (cortes en `vigilancia.insignias`) |
 | Alertas abiertas | Lista y botón **Recalcular alertas** |
 | Tests por semana | Últimas 12 semanas (no depende del periodo elegido) |
@@ -46,7 +46,7 @@ Regla en `vigilancia.alerta`: un municipio entra en alerta si junta **`minimoRoj
 `pnpm db:seed` genera unas 300 evaluaciones con `prisma/simulacion.ts`. Usa un PRNG con semilla fija y calcula el resultado con el mismo `evaluar()`.
 - Las fechas se cuentan hacia atrás desde el día del seed, con más tests en las semanas recientes. **Volver a correr el seed el día de la demo** para que el periodo de 7 días tenga datos.
 - Llevan `version_pack = "simulacion-demo"`: el seed solo borra y rehace esas filas.
-- El reparto está pensado para la demo: Río Dorado dispara la alerta y Bajío del Sol queda con 3 tests, así se ve la supresión.
+- El reparto está pensado para la demo: 11 municipios reales de Bolivia con datos ficticios (norte de La Paz minero, Amazonía ribereña, Chiquitanía, Altiplano). Guanay dispara la alerta y Trinidad queda con menos de 5 chequeos, así se ve la supresión.
 
 ## Diseño visual
 

@@ -113,7 +113,15 @@ export function PanelVigilancia({
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1.4fr_1fr]">
         <Panel titulo={t.mapaTitulo} nota={t.mapaNota}>
-          <MapaCalor municipios={resumen.municipios} textos={{ titulo: t.mapaTitulo, menos: t.menos, mas: t.mas, suprimido: t.suprimido }} />
+          <MapaCalor municipios={resumen.municipios} textos={{
+              titulo: t.mapaTitulo,
+              menos: t.menos,
+              mas: t.mas,
+              suprimido: t.suprimido,
+              leyendaSuprimido: t.mapaLeyendaSuprimido,
+              detalle: t.mapaDetalle,
+              detalleSuprimido: t.mapaDetalleSuprimido,
+            }} />
         </Panel>
 
         <div className="flex flex-col gap-5">

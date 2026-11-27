@@ -1,4 +1,5 @@
 import type { Conteo, FilaMunicipio, ResumenVigilancia } from "@/domain/vigilancia";
+import { DEPARTAMENTOS, MAPA_ALTO, MAPA_ANCHO, proyectar } from "./boliviaGeo";
 
 /** Reemplaza {clave} en un texto del pack. */
 export const fmt = (t: string, v: Record<string, string | number>) =>
@@ -11,93 +12,219 @@ function colorCalor(t: number) {
   return ESCALA[Math.round(x)];
 }
 
-const TERRITORIO =
-  "M40 70 C90 20 190 30 250 45 S380 60 395 140 S370 300 320 345 S170 385 110 350 S20 260 28 180 S10 110 40 70z";
+/**
+ * Dónde va el nombre de cada departamento: punto interior lejos del borde y de
+ * los municipios del catálogo (calculado una vez; Santa Cruz ajustado a mano).
+ * Si se cambia municipios.json, revisar que no se tapen.
+ */
+const ETIQUETA_DEPTO: Record<string, [number, number]> = {
+  Beni: [135, 168],
+  Chuquisaca: [228, 459],
+  Cochabamba: [159, 312],
+  "La Paz": [60, 318],
+  Oruro: [69, 366],
+  Pando: [81, 96],
+  Potosí: [105, 474],
+  "Santa Cruz": [345, 385],
+  Tarija: [252, 489],
+};
+
+export interface TextosMapa {
+  titulo: string;
+  menos: string;
+  mas: string;
+  suprimido: string;
+  leyendaSuprimido: string;
+  detalle: string;
+  detalleSuprimido: string;
+}
+
+type Caja = { x1: number; y1: number; x2: number; y2: number };
+type Ubicacion = { dx: number; dy: number; ancla: "start" | "end" | "middle" };
+const choca = (a: Caja, b: Caja) => a.x1 < b.x2 && b.x1 < a.x2 && a.y1 < b.y2 && b.y1 < a.y2;
+
+const OPCIONES: Ubicacion[] = [
+  { dx: 10, dy: 4, ancla: "start" },
+  { dx: -10, dy: 4, ancla: "end" },
+  { dx: 0, dy: -12, ancla: "middle" },
+  { dx: 0, dy: 20, ancla: "middle" },
+  { dx: 10, dy: -9, ancla: "start" },
+  { dx: -10, dy: 17, ancla: "end" },
+  { dx: 10, dy: 17, ancla: "start" },
+  { dx: -10, dy: -9, ancla: "end" },
+];
 
 /**
- * Mapa esquemático: cada municipio es una burbuja en su centro (lat/lon del
- * catálogo) con un halo de calor según los tests con visita recomendada.
- * Sin Leaflet ni teselas: funciona sin internet y no ubica a nadie.
+ * Ubica cada nombre en el primer lugar libre alrededor de su punto, en orden de
+ * importancia, sin pisar otros nombres ni puntos y sin salirse del mapa.
  */
-export function MapaCalor({
-  municipios,
-  textos,
-}: {
-  municipios: FilaMunicipio[];
-  textos: { titulo: string; menos: string; mas: string; suprimido: string };
-}) {
-  const W = 420;
-  const H = 400;
-  const lats = municipios.map((m) => m.latCentro);
-  const lons = municipios.map((m) => m.lonCentro);
-  const [minLat, maxLat, minLon, maxLon] = [Math.min(...lats), Math.max(...lats), Math.min(...lons), Math.max(...lons)];
-  const padLat = Math.max((maxLat - minLat) * 0.3, 0.2);
-  const padLon = Math.max((maxLon - minLon) * 0.3, 0.2);
-  const x = (lon: number) => ((lon - (minLon - padLon)) / (maxLon - minLon + 2 * padLon)) * W;
-  const y = (lat: number) => H - ((lat - (minLat - padLat)) / (maxLat - minLat + 2 * padLat)) * H;
+function ubicarEtiquetas(puntos: { cx: number; cy: number; texto: string }[], fs: number): Ubicacion[] {
+  const ocupadas: Caja[] = puntos.map((p) => ({ x1: p.cx - 7, y1: p.cy - 7, x2: p.cx + 7, y2: p.cy + 7 }));
+  return puntos.map((p, i) => {
+    const w = p.texto.length * fs * 0.56;
+    const h = fs * 1.1;
+    const caja = (o: Ubicacion): Caja => {
+      const x = p.cx + o.dx;
+      const x1 = o.ancla === "start" ? x : o.ancla === "end" ? x - w : x - w / 2;
+      const y2 = p.cy + o.dy + 2;
+      return { x1, y1: y2 - h, x2: x1 + w, y2 };
+    };
+    const libre =
+      OPCIONES.find((o) => {
+        const c = caja(o);
+        if (c.x1 < 2 || c.x2 > MAPA_ANCHO - 2 || c.y1 < 2 || c.y2 > MAPA_ALTO - 2) return false;
+        return !ocupadas.some((b, j) => j !== i && choca(c, b));
+      }) ?? OPCIONES[0];
+    ocupadas.push(caja(libre));
+    return libre;
+  });
+}
+
+/**
+ * Mapa de Bolivia con sus departamentos. Cada municipio es un punto en su centro
+ * (lat/lon del catálogo) con un halo de calor según los chequeos con visita
+ * recomendada. Sin Leaflet ni teselas: funciona sin internet y no ubica a nadie.
+ * Pasando el mouse (o tocando) sobre un punto se ve el detalle.
+ */
+export function MapaCalor({ municipios, textos }: { municipios: FilaMunicipio[]; textos: TextosMapa }) {
   const max = Math.max(1, ...municipios.map((m) => m.conVisita ?? 0));
+  const FS = 12;
+  // Los de menos visitas se dibujan primero (los de más quedan encima).
+  const puntos = [...municipios]
+    .sort((a, b) => (a.conVisita ?? -1) - (b.conVisita ?? -1))
+    .map((m) => {
+      const [cx, cy] = proyectar(m.lonCentro, m.latCentro);
+      return { m, cx, cy, texto: m.nombre };
+    });
+  // Los de más visitas eligen primero dónde va su nombre.
+  const porImportancia = [...puntos].reverse();
+  const ubicaciones = ubicarEtiquetas(porImportancia, FS);
+  const etiquetas = new Map(porImportancia.map((p, i) => [p.m.codigo, ubicaciones[i]]));
+  const detalle = (m: FilaMunicipio) =>
+    fmt(m.suprimido ? textos.detalleSuprimido : textos.detalle, {
+      municipio: m.nombre,
+      departamento: m.departamento ?? "",
+      visita: m.conVisita ?? 0,
+      total: m.total ?? 0,
+    });
 
   return (
     <div className="flex flex-col gap-3">
-      <svg viewBox={`0 0 ${W} ${H}`} className="w-full rounded-xl bg-[#eaf1ec]" role="img" aria-label={textos.titulo}>
+      <svg
+        viewBox={`0 0 ${MAPA_ANCHO} ${MAPA_ALTO}`}
+        className="mx-auto w-full max-w-[34rem] rounded-xl bg-[#eaf1ec]"
+        role="img"
+        aria-label={textos.titulo}
+      >
         <defs>
-          {municipios.map((m, i) => {
+          {municipios.map((m) => {
             const c = colorCalor((m.conVisita ?? 0) / max);
             return (
-              <radialGradient key={m.codigo} id={`calor-${i}`}>
-                <stop offset="0%" stopColor={c} stopOpacity="0.85" />
-                <stop offset="60%" stopColor={c} stopOpacity="0.35" />
+              <radialGradient key={m.codigo} id={`calor-${m.codigo}`}>
+                <stop offset="0%" stopColor={c} stopOpacity="0.9" />
+                <stop offset="55%" stopColor={c} stopOpacity="0.4" />
                 <stop offset="100%" stopColor={c} stopOpacity="0" />
               </radialGradient>
             );
           })}
-          <pattern id="puntos" width="14" height="14" patternUnits="userSpaceOnUse">
-            <circle cx="2" cy="2" r="1" fill="#c9d8cf" />
-          </pattern>
+          <clipPath id="bolivia">
+            {DEPARTAMENTOS.map((d) => (
+              <path key={d.nombre} d={d.d} />
+            ))}
+          </clipPath>
         </defs>
-        {/* Territorio esquemático (decorativo, no es un límite real). */}
-        <path d={TERRITORIO} fill="#fffdf9" stroke="#9fb5a8" strokeWidth="1.5" />
-        <path d={TERRITORIO} fill="url(#puntos)" />
-        <path d="M30 210 C110 190 150 250 220 230 S330 160 400 190" fill="none" stroke="#8cc3d6" strokeWidth="4" strokeLinecap="round" opacity="0.7" />
-        <path d="M150 40 C170 110 140 160 190 220" fill="none" stroke="#8cc3d6" strokeWidth="2.5" strokeLinecap="round" opacity="0.6" />
 
-        {municipios.map((m, i) =>
-          !m.suprimido && (m.conVisita ?? 0) > 0 ? (
-            <circle
-              key={`h-${m.codigo}`}
-              cx={x(m.lonCentro)}
-              cy={y(m.latCentro)}
-              r={28 + 52 * Math.sqrt((m.conVisita ?? 0) / max)}
-              fill={`url(#calor-${i})`}
-            />
-          ) : null,
-        )}
-        {municipios.map((m) => {
-          const cx = x(m.lonCentro);
-          const cy = y(m.latCentro);
+        {/* Borde del país: trazo grueso debajo, tapado por dentro con el relleno. */}
+        <g fill="none" stroke="#7f978a" strokeWidth="3.5" strokeLinejoin="round">
+          {DEPARTAMENTOS.map((d) => (
+            <path key={d.nombre} d={d.d} />
+          ))}
+        </g>
+        <g fill="#fffdf9">
+          {DEPARTAMENTOS.map((d) => (
+            <path key={d.nombre} d={d.d} />
+          ))}
+        </g>
+
+        {/* Calor, recortado al territorio. */}
+        <g clipPath="url(#bolivia)">
+          {puntos.map(({ m, cx, cy }) =>
+            !m.suprimido && (m.conVisita ?? 0) > 0 ? (
+              <circle
+                key={m.codigo}
+                cx={cx}
+                cy={cy}
+                r={16 + 34 * Math.sqrt((m.conVisita ?? 0) / max)}
+                fill={`url(#calor-${m.codigo})`}
+              />
+            ) : null,
+          )}
+        </g>
+
+        {/* Límites departamentales y sus nombres. */}
+        <g fill="none" stroke="#c6b998" strokeWidth="0.9" strokeDasharray="3 2.5">
+          {DEPARTAMENTOS.map((d) => (
+            <path key={d.nombre} d={d.d} />
+          ))}
+        </g>
+        {DEPARTAMENTOS.map((d) => {
+          const [x, y] = ETIQUETA_DEPTO[d.nombre] ?? [d.cx, d.cy];
+          return (
+            <text key={d.nombre} x={x} y={y} textAnchor="middle" fontSize="10.5" fontWeight="700" letterSpacing="1.5" fill="#a8997a">
+              {d.nombre.toUpperCase()}
+            </text>
+          );
+        })}
+
+        {puntos.map(({ m, cx, cy, texto }) => {
+          const o = etiquetas.get(m.codigo) ?? OPCIONES[0];
           return (
             <g key={m.codigo}>
+              <title>{detalle(m)}</title>
+              {/* Área invisible más grande para poder tocarlo en el celular. */}
+              <circle cx={cx} cy={cy} r="14" fill="transparent" />
               {m.suprimido ? (
-                <circle cx={cx} cy={cy} r="9" fill="#ffffff" stroke="#9aa3a0" strokeWidth="2" strokeDasharray="3 3" />
+                <circle cx={cx} cy={cy} r="6" fill="#ffffff" stroke="#7d8784" strokeWidth="1.8" strokeDasharray="2.5 2" />
               ) : (
-                <circle cx={cx} cy={cy} r="6.5" fill="#1f2a2e" stroke="#ffffff" strokeWidth="2.5" />
+                <circle
+                  cx={cx}
+                  cy={cy}
+                  r={m.enAlerta ? 6 : 4.8}
+                  fill={m.enAlerta ? "#9b1c14" : "#1f2a2e"}
+                  stroke="#ffffff"
+                  strokeWidth="2"
+                />
               )}
-              <text x={cx} y={cy + 24} textAnchor="middle" fontSize="13" fontWeight="700" fill="#1f2a2e" paintOrder="stroke" stroke="#fffdf9" strokeWidth="4">
-                {m.nombre.replace(/\s*\(prueba\)/, "")}
+              <text
+                x={cx + o.dx}
+                y={cy + o.dy}
+                textAnchor={o.ancla}
+                fontSize={FS}
+                fontWeight="700"
+                fill={m.suprimido ? "#5b6669" : "#1f2a2e"}
+                paintOrder="stroke"
+                stroke="#fffdf9"
+                strokeWidth="3.5"
+                strokeLinejoin="round"
+              >
+                {texto}
               </text>
-              {m.suprimido && (
-                <text x={cx} y={cy + 39} textAnchor="middle" fontSize="11" fill="#5b6669" paintOrder="stroke" stroke="#fffdf9" strokeWidth="4">
-                  {textos.suprimido}
-                </text>
-              )}
             </g>
           );
         })}
       </svg>
-      <div className="flex items-center gap-3 text-sm text-muted-foreground">
-        {textos.menos}
-        <span className="h-2.5 w-40 rounded-full" style={{ background: `linear-gradient(90deg, ${ESCALA.join(",")})` }} />
-        {textos.mas}
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
+        <span className="flex items-center gap-3">
+          {textos.menos}
+          <span className="h-2.5 w-32 rounded-full" style={{ background: `linear-gradient(90deg, ${ESCALA.join(",")})` }} />
+          {textos.mas}
+        </span>
+        <span className="flex items-center gap-2">
+          <svg viewBox="0 0 16 16" className="size-4" aria-hidden>
+            <circle cx="8" cy="8" r="5.5" fill="#fff" stroke="#7d8784" strokeWidth="1.6" strokeDasharray="2.5 2" />
+          </svg>
+          {textos.leyendaSuprimido}
+        </span>
       </div>
     </div>
   );

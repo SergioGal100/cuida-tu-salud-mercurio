@@ -20,8 +20,8 @@ async function main() {
 
   await prisma.establecimiento.upsert({
     where: { id: ESTABLECIMIENTO_DEMO },
-    create: { id: ESTABLECIMIENTO_DEMO, nombre: "Posta de prueba Río Dorado", municipioCodigo: "DEMO-01", nivelAtencion: "Primer nivel" },
-    update: {},
+    create: { id: ESTABLECIMIENTO_DEMO, nombre: "Posta de prueba Guanay", municipioCodigo: "DEMO-01", nivelAtencion: "Primer nivel" },
+    update: { nombre: "Posta de prueba Guanay" },
   });
 
   const passwordHash = await bcrypt.hash(CONTRASENA_DEMO, 10);

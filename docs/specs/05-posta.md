@@ -8,9 +8,9 @@ Los crea [prisma/seed.ts](../../prisma/seed.ts). Todos tienen la contraseña `de
 
 | Correo | Rol | Establecimiento |
 |---|---|---|
-| `medico@demo.bo` | MEDICO | Posta de prueba Río Dorado |
+| `medico@demo.bo` | MEDICO | Posta de prueba Guanay |
 | `epi@demo.bo` | EPIDEMIOLOGO | ninguno (para vigilancia) |
-| `admin@demo.bo` | ADMIN | Posta de prueba Río Dorado |
+| `admin@demo.bo` | ADMIN | Posta de prueba Guanay |
 
 ## Pantallas
 
