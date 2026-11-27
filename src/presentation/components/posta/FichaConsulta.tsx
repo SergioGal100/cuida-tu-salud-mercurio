@@ -15,9 +15,14 @@ import {
 import type { ContentPack, MuestraLaboratorio } from "@/domain/contenido/ContentPack";
 import type { ResultadoEvaluacion } from "@/domain/scoring";
 import { apiPosta } from "./apiPosta";
-import { ChipNivel, claseBoton, claseCampo, fechaCorta, Tarjeta, tx } from "./comunes";
+import { cn } from "@/presentation/lib/utils";
+import { ChipNivel, claseBoton, claseCampo, fechaCorta, FRANJA_NIVEL, Tarjeta, tx } from "./comunes";
 
-const hoyIso = () => new Date().toISOString().slice(0, 10);
+/** Fecha local "AAAA-MM-DD" (toISOString daría mañana después de las 20:00 en Bolivia). */
+const hoyIso = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+};
 
 /** Ficha clínica: entrevista, diferenciales, examen, conducta y laboratorio con recálculo. */
 export function FichaConsulta({
@@ -106,37 +111,38 @@ export function FichaConsulta({
         ← {tx(t, "volver")}
       </Link>
 
-      <header className="flex flex-wrap items-center gap-3">
-        <h1 className="text-2xl font-bold">{tx(t, "ficha")}</h1>
-        <span className="text-muted-foreground">
-          {fechaCorta(consulta.fecha, pack.idioma)} · {municipioNombre}
-        </span>
-      </header>
-
-      <Tarjeta>
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="font-bold">{tx(t, "nivelFinal")}</span>
-          <ChipNivel nivel={consulta.nivelFinal} urgente={r.urgente} t={t} />
-          <span className="text-sm text-muted-foreground">{tx(t, `estado_${consulta.estado}`)}</span>
+      <section className={cn("tarjeta hero flex flex-col gap-4 border-l-[6px] p-5", FRANJA_NIVEL[consulta.nivelFinal])}>
+        <div className="flex flex-wrap items-start gap-3">
+          <div className="flex flex-1 flex-col gap-1">
+            <h1 className="text-2xl font-bold">{tx(t, "ficha")}</h1>
+            <span className="text-muted-foreground">
+              {fechaCorta(consulta.fecha, pack.idioma)} · {municipioNombre} · {tx(t, `estado_${consulta.estado}`)}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-bold text-muted-foreground">{tx(t, "nivelFinal")}</span>
+            <ChipNivel nivel={consulta.nivelFinal} urgente={r.urgente} t={t} />
+          </div>
         </div>
-      </Tarjeta>
+        <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {(
+            [
+              ["exposicion", `${r.puntajeExposicion} / ${pack.exposicion.tope}`],
+              ["sintomas", `${r.puntajeSintomas} / ${pack.sintomas.tope}`],
+              ["total", `${r.puntaje} / ${pack.exposicion.tope + pack.sintomas.tope}`],
+              ["laboratoriosCargados", String(consulta.laboratorios.length)],
+            ] as const
+          ).map(([k, v]) => (
+            <div key={k} className="rounded-xl bg-card/80 p-3 shadow-suave">
+              <dt className="text-sm text-muted-foreground">{tx(t, k)}</dt>
+              <dd className="text-2xl font-bold text-titulo">{v}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Tarjeta titulo={tx(t, "entrevista")}>
-          <dl className="grid grid-cols-3 gap-2 text-center">
-            {[
-              ["exposicion", r.puntajeExposicion, pack.exposicion.tope],
-              ["sintomas", r.puntajeSintomas, pack.sintomas.tope],
-              ["total", r.puntaje, pack.exposicion.tope + pack.sintomas.tope],
-            ].map(([k, v, max]) => (
-              <div key={k as string} className="rounded-lg bg-muted p-2">
-                <dt className="text-sm text-muted-foreground">{tx(t, k as string)}</dt>
-                <dd className="text-xl font-bold">
-                  {v} <span className="text-sm font-normal text-muted-foreground">/ {max}</span>
-                </dd>
-              </div>
-            ))}
-          </dl>
           <div className="flex items-center gap-2">
             <span className="text-sm">{tx(t, "entrevista")}:</span>
             <ChipNivel nivel={r.nivel} urgente={r.urgente} t={t} />
@@ -148,7 +154,7 @@ export function FichaConsulta({
           ) : (
             <ul className="flex flex-col gap-2">
               {r.reglas.map((id) => (
-                <li key={id} className="rounded-lg border p-2">
+                <li key={id} className="rounded-xl border bg-background/60 p-3">
                   <p className="font-mono text-sm font-bold">{id}</p>
                   <p>{regla(id)?.motivo}</p>
                   <p className="text-sm text-muted-foreground">{tx(t, `origen_${regla(id)?.origen}`)}</p>

@@ -4,6 +4,13 @@ import { cn } from "@/presentation/lib/utils";
 
 export type TextosPosta = Record<string, string>;
 
+/** Franja de color por nivel (tarjetas de casos y encabezado de la ficha). */
+export const FRANJA_NIVEL: Record<NivelId, string> = {
+  VERDE: "border-l-verde",
+  AMARILLO: "border-l-[#f2b705]",
+  ROJO: "border-l-rojo",
+};
+
 /** Texto de la posta por clave; si falta, muestra la clave (así se nota en la demo). */
 export const tx = (t: TextosPosta, clave: string) => t[clave] ?? clave;
 
@@ -25,7 +32,7 @@ export function ChipNivel({ nivel, urgente, t }: { nivel: NivelId; urgente?: boo
 
 export function Tarjeta({ titulo, children, className }: { titulo?: string; children: ReactNode; className?: string }) {
   return (
-    <section className={cn("flex flex-col gap-3 rounded-2xl border bg-card p-4 shadow-sm", className)}>
+    <section className={cn("tarjeta flex flex-col gap-3 p-5", className)}>
       {titulo && <h2 className="text-lg font-bold">{titulo}</h2>}
       {children}
     </section>
@@ -36,8 +43,8 @@ export const fechaCorta = (iso: string, idioma: string) =>
   new Date(iso).toLocaleDateString(idioma, { day: "2-digit", month: "short", year: "numeric" });
 
 export const claseCampo =
-  "min-h-11 w-full rounded-lg border-2 border-input bg-card px-3 text-base focus-visible:border-primary focus-visible:outline-none";
+  "min-h-11 w-full rounded-xl border-2 border-input bg-card px-3 text-base shadow-suave focus-visible:border-primary focus-visible:outline-none";
 export const claseBoton =
-  "inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-4 text-base font-bold text-primary-foreground disabled:opacity-50";
+  "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-b from-[#13857a] to-primary px-5 text-base font-bold text-primary-foreground shadow-elevada transition-transform active:scale-[0.98] disabled:opacity-50";
 export const claseBotonSecundario =
-  "inline-flex min-h-11 items-center justify-center rounded-lg border-2 border-primary px-4 text-base font-bold text-primary";
+  "inline-flex min-h-11 items-center justify-center rounded-xl border-2 border-primary/70 bg-card px-4 text-base font-bold text-primary shadow-suave";
